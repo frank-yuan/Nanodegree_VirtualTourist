@@ -14,6 +14,12 @@
 		94E360131D56400D003F1040 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94E360111D56400D003F1040 /* LaunchScreen.storyboard */; };
 		94E3601E1D56400D003F1040 /* Nanodegree_VirtualTouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E3601D1D56400D003F1040 /* Nanodegree_VirtualTouristTests.swift */; };
 		94E360291D564238003F1040 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E360281D564238003F1040 /* MapKit.framework */; };
+		94E3602C1D578149003F1040 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 94E3602A1D578149003F1040 /* Model.xcdatamodeld */; };
+		94E360341D57884A003F1040 /* HttpService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E360331D57884A003F1040 /* HttpService.swift */; };
+		94E360361D578868003F1040 /* HttpServiceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E360351D578868003F1040 /* HttpServiceHelper.swift */; };
+		94E360381D578873003F1040 /* GCDBlackBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E360371D578873003F1040 /* GCDBlackBox.swift */; };
+		94E3603A1D578878003F1040 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E360391D578878003F1040 /* Utils.swift */; };
+		94E3603C1D578898003F1040 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E3603B1D578898003F1040 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +44,12 @@
 		94E3601D1D56400D003F1040 /* Nanodegree_VirtualTouristTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nanodegree_VirtualTouristTests.swift; sourceTree = "<group>"; };
 		94E3601F1D56400D003F1040 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		94E360281D564238003F1040 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		94E3602B1D578149003F1040 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		94E360331D57884A003F1040 /* HttpService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpService.swift; sourceTree = "<group>"; };
+		94E360351D578868003F1040 /* HttpServiceHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpServiceHelper.swift; sourceTree = "<group>"; };
+		94E360371D578873003F1040 /* GCDBlackBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GCDBlackBox.swift; sourceTree = "<group>"; };
+		94E360391D578878003F1040 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		94E3603B1D578898003F1040 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +74,7 @@
 		94E35FFC1D56400D003F1040 = {
 			isa = PBXGroup;
 			children = (
+				94E3602A1D578149003F1040 /* Model.xcdatamodeld */,
 				94E360281D564238003F1040 /* MapKit.framework */,
 				94E360071D56400D003F1040 /* Nanodegree_VirtualTourist */,
 				94E3601C1D56400D003F1040 /* Nanodegree_VirtualTouristTests */,
@@ -81,6 +94,9 @@
 		94E360071D56400D003F1040 /* Nanodegree_VirtualTourist */ = {
 			isa = PBXGroup;
 			children = (
+				94E3603E1D5788C2003F1040 /* Network */,
+				94E3603D1D57889F003F1040 /* Supporting Files */,
+				94E3603B1D578898003F1040 /* Constants.swift */,
 				94E360081D56400D003F1040 /* AppDelegate.swift */,
 				94E3600A1D56400D003F1040 /* ViewController.swift */,
 				94E3600C1D56400D003F1040 /* Main.storyboard */,
@@ -98,6 +114,24 @@
 				94E3601F1D56400D003F1040 /* Info.plist */,
 			);
 			path = Nanodegree_VirtualTouristTests;
+			sourceTree = "<group>";
+		};
+		94E3603D1D57889F003F1040 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				94E360371D578873003F1040 /* GCDBlackBox.swift */,
+				94E360391D578878003F1040 /* Utils.swift */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		94E3603E1D5788C2003F1040 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				94E360331D57884A003F1040 /* HttpService.swift */,
+				94E360351D578868003F1040 /* HttpServiceHelper.swift */,
+			);
+			name = Network;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -203,6 +237,12 @@
 			files = (
 				94E3600B1D56400D003F1040 /* ViewController.swift in Sources */,
 				94E360091D56400D003F1040 /* AppDelegate.swift in Sources */,
+				94E3602C1D578149003F1040 /* Model.xcdatamodeld in Sources */,
+				94E3603A1D578878003F1040 /* Utils.swift in Sources */,
+				94E360341D57884A003F1040 /* HttpService.swift in Sources */,
+				94E360381D578873003F1040 /* GCDBlackBox.swift in Sources */,
+				94E360361D578868003F1040 /* HttpServiceHelper.swift in Sources */,
+				94E3603C1D578898003F1040 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,6 +434,7 @@
 				94E360241D56400D003F1040 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		94E360251D56400D003F1040 /* Build configuration list for PBXNativeTarget "Nanodegree_VirtualTouristTests" */ = {
 			isa = XCConfigurationList;
@@ -402,8 +443,22 @@
 				94E360271D56400D003F1040 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		94E3602A1D578149003F1040 /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				94E3602B1D578149003F1040 /* Model.xcdatamodel */,
+			);
+			currentVersion = 94E3602B1D578149003F1040 /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 94E35FFD1D56400D003F1040 /* Project object */;
 }
