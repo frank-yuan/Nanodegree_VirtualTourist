@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9403FC8C1D58857700C22F5C /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403FC8B1D58857700C22F5C /* MapViewController.swift */; };
+		9403FC9E1D58DC7300C22F5C /* Image+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403FC9A1D58DC7300C22F5C /* Image+CoreDataProperties.swift */; };
+		9403FC9F1D58DC7300C22F5C /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403FC9B1D58DC7300C22F5C /* Image.swift */; };
+		9403FCA01D58DC7300C22F5C /* MapCoordinate+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403FC9C1D58DC7300C22F5C /* MapCoordinate+CoreDataProperties.swift */; };
+		9403FCA11D58DC7300C22F5C /* MapCoordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403FC9D1D58DC7300C22F5C /* MapCoordinate.swift */; };
+		9403FCA31D58DF6400C22F5C /* FlickrViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403FCA21D58DF6400C22F5C /* FlickrViewController.swift */; };
 		94E360091D56400D003F1040 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E360081D56400D003F1040 /* AppDelegate.swift */; };
 		94E3600B1D56400D003F1040 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E3600A1D56400D003F1040 /* ViewController.swift */; };
 		94E3600E1D56400D003F1040 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94E3600C1D56400D003F1040 /* Main.storyboard */; };
@@ -33,6 +39,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9403FC8B1D58857700C22F5C /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		9403FC8D1D58DC2600C22F5C /* Nanodegree_VirtualTourist-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Nanodegree_VirtualTourist-Bridging-Header.h"; sourceTree = "<group>"; };
+		9403FC9A1D58DC7300C22F5C /* Image+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		9403FC9B1D58DC7300C22F5C /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
+		9403FC9C1D58DC7300C22F5C /* MapCoordinate+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MapCoordinate+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		9403FC9D1D58DC7300C22F5C /* MapCoordinate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapCoordinate.swift; sourceTree = "<group>"; };
+		9403FCA21D58DF6400C22F5C /* FlickrViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrViewController.swift; sourceTree = "<group>"; };
 		94E360051D56400D003F1040 /* Nanodegree_VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nanodegree_VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94E360081D56400D003F1040 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		94E3600A1D56400D003F1040 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -71,6 +84,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9403FCA41D58DFC200C22F5C /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				9403FC9A1D58DC7300C22F5C /* Image+CoreDataProperties.swift */,
+				9403FC9B1D58DC7300C22F5C /* Image.swift */,
+				9403FC9C1D58DC7300C22F5C /* MapCoordinate+CoreDataProperties.swift */,
+				9403FC9D1D58DC7300C22F5C /* MapCoordinate.swift */,
+			);
+			name = CoreData;
+			sourceTree = "<group>";
+		};
+		9403FCA51D58DFCF00C22F5C /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				9403FC8B1D58857700C22F5C /* MapViewController.swift */,
+				9403FCA21D58DF6400C22F5C /* FlickrViewController.swift */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
 		94E35FFC1D56400D003F1040 = {
 			isa = PBXGroup;
 			children = (
@@ -79,6 +112,7 @@
 				94E360071D56400D003F1040 /* Nanodegree_VirtualTourist */,
 				94E3601C1D56400D003F1040 /* Nanodegree_VirtualTouristTests */,
 				94E360061D56400D003F1040 /* Products */,
+				9403FC8D1D58DC2600C22F5C /* Nanodegree_VirtualTourist-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -94,6 +128,8 @@
 		94E360071D56400D003F1040 /* Nanodegree_VirtualTourist */ = {
 			isa = PBXGroup;
 			children = (
+				9403FCA51D58DFCF00C22F5C /* ViewControllers */,
+				9403FCA41D58DFC200C22F5C /* CoreData */,
 				94E3603E1D5788C2003F1040 /* Network */,
 				94E3603D1D57889F003F1040 /* Supporting Files */,
 				94E3603B1D578898003F1040 /* Constants.swift */,
@@ -236,12 +272,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				94E3600B1D56400D003F1040 /* ViewController.swift in Sources */,
+				9403FC9E1D58DC7300C22F5C /* Image+CoreDataProperties.swift in Sources */,
 				94E360091D56400D003F1040 /* AppDelegate.swift in Sources */,
 				94E3602C1D578149003F1040 /* Model.xcdatamodeld in Sources */,
 				94E3603A1D578878003F1040 /* Utils.swift in Sources */,
+				9403FCA31D58DF6400C22F5C /* FlickrViewController.swift in Sources */,
+				9403FC8C1D58857700C22F5C /* MapViewController.swift in Sources */,
 				94E360341D57884A003F1040 /* HttpService.swift in Sources */,
 				94E360381D578873003F1040 /* GCDBlackBox.swift in Sources */,
 				94E360361D578868003F1040 /* HttpServiceHelper.swift in Sources */,
+				9403FC9F1D58DC7300C22F5C /* Image.swift in Sources */,
+				9403FCA11D58DC7300C22F5C /* MapCoordinate.swift in Sources */,
+				9403FCA01D58DC7300C22F5C /* MapCoordinate+CoreDataProperties.swift in Sources */,
 				94E3603C1D578898003F1040 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -373,10 +415,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Nanodegree_VirtualTourist/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.frank-yuan.Nanodegree-VirtualTourist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Nanodegree_VirtualTourist-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -384,10 +429,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Nanodegree_VirtualTourist/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.frank-yuan.Nanodegree-VirtualTourist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Nanodegree_VirtualTourist-Bridging-Header.h";
 			};
 			name = Release;
 		};
