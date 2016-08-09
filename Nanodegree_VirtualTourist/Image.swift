@@ -14,4 +14,15 @@ class Image: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
 
+    convenience init(id:String, url:String, context: NSManagedObjectContext)
+    {
+        if let ent = NSEntityDescription.entityForName("Image", inManagedObjectContext: context) {
+            self.init(entity: ent, insertIntoManagedObjectContext: context)
+            self.id = id
+            self.url = url
+        } else {
+            fatalError("Unable to find Entity Name")
+        }
+        
+    }
 }

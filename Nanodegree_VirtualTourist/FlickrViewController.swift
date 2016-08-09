@@ -9,7 +9,9 @@
 import UIKit
 
 class FlickrViewController: UIViewController {
-
+    
+    var mapCoordinate : MapCoordinate?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 

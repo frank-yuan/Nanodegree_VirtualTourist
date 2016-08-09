@@ -8,16 +8,39 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class MapViewController: UIViewController, MKMapViewDelegate {
 
     @IBOutlet weak var mapView : MKMapView!
+    
+    var fetchedResultsController : NSFetchedResultsController?{
+        didSet{
+            // Whenever the frc changes, we execute the search and
+            // reload the table
+            fetchedResultsController?.delegate = self
+            executeSearch()
+            reloadAnnotations()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleMapLongPress))
         mapView.addGestureRecognizer(gesture)
+        
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let stack = delegate.stack
+        
+        // Create a fetchrequest
+        let fr = NSFetchRequest(entityName: "MapCoordinate")
+        fr.sortDescriptors = [NSSortDescriptor(key: "createdDate", ascending: true)]
+        //    NSSortDescriptor(key: "creationDate", ascending: false)]
+        
+        // Create the FetchedResultsController
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
+                                            managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
         // Do any additional setup after loading the view.
     }
 
@@ -55,11 +78,35 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         {
             let touchPoint = gestureRecognizer.locationInView(mapView)
             let coordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
-            let annotation = MKPointAnnotation()
-            
-            annotation.coordinate = coordinate
-            mapView.addAnnotation(annotation)
+            if let context = fetchedResultsController?.managedObjectContext{
+                
+                // Just create a new note and you're done!
+                let _ = MapCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude, context: context)
+            }
+//            let annotation = MKPointAnnotation()
+//            
+//            annotation.coordinate = coordinate
+//            mapView.addAnnotation(annotation)
         }
+    }
+    
+    func reloadAnnotations() {
+        
+        if let fc = fetchedResultsController{
+            for obj in fc.fetchedObjects! {
+                if let coord = obj as? MapCoordinate {
+                    addAnnotation(Double(coord.latitude!), longitude: Double(coord.longitude!))
+                }
+            }
+        }
+    }
+    
+    func addAnnotation(latitude:Double, longitude:Double)
+    {
+        let annotation = MKPointAnnotation()
+        
+        annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        mapView.addAnnotation(annotation)
     }
 
     //func handleAnnotationTouched(gestureRecognizer:UIGestureRecognizer) {
@@ -67,4 +114,45 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     //        print((annotationView.annotation?.description)!)
     //    }
     //}
+}
+
+// MARK:  - Fetches
+extension MapViewController{
+    
+    func executeSearch(){
+        if let fc = fetchedResultsController{
+            do{
+                try fc.performFetch()
+            }catch let e as NSError{
+                print("Error while trying to perform a search: \n\(e)\n\(fetchedResultsController)")
+            }
+        }
+    }
+}
+
+extension MapViewController : NSFetchedResultsControllerDelegate {
+    
+    func controller(controller: NSFetchedResultsController,
+        didChangeObject anObject: AnyObject,
+        atIndexPath indexPath: NSIndexPath?,
+        forChangeType type: NSFetchedResultsChangeType,
+        newIndexPath: NSIndexPath?) {
+            
+        
+        if let coordinate = anObject as? MapCoordinate {
+            
+            switch(type){
+                
+            case .Insert:
+                addAnnotation(Double(coordinate.latitude!), longitude: Double(coordinate.longitude!))
+                
+            default:
+                break
+            }
+        }
+        
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+    }
 }
