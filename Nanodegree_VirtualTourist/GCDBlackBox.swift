@@ -13,3 +13,13 @@ func performUIUpdatesOnMain(updates: () -> Void) {
         updates()
     }
 }
+func performUpdatesUserInitiated(updates: () -> Void) {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) {
+        updates()
+    }
+}
+func performUpdatesBackground(updates: () -> Void) {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
+        updates()
+    }
+}

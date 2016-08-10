@@ -24,6 +24,5 @@ class MapCoordinate: NSManagedObject {
         } else {
             fatalError("Unable to find Entity Name")
         }
-        
     }
 }

@@ -12,7 +12,16 @@ import CoreData
 
 class MapViewController: UIViewController, MKMapViewDelegate {
 
+    enum State{
+        case Place
+        case Delete
+    }
+    
     @IBOutlet weak var mapView : MKMapView!
+    @IBOutlet weak var barItem: UIBarButtonItem!
+    @IBOutlet weak var deleteLabel: UILabel!
+    
+    private var currentState = State.Place
     
     var fetchedResultsController : NSFetchedResultsController?{
         didSet{
@@ -24,8 +33,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    // MARK: UIViewcontroller overrides
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        barItem.title = "Delete"
 
         let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleMapLongPress))
         mapView.addGestureRecognizer(gesture)
@@ -43,6 +55,16 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                                             managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
         // Do any additional setup after loading the view.
     }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if let annotation = mapView.selectedAnnotations.last as? CoreDataPointAnnotation {
+            if let vc = segue.destinationViewController as? FlickrViewController {
+                vc.mapCoordinate = annotation.data as? MapCoordinate
+            }
+        
+            mapView.deselectAnnotation(annotation, animated: false)
+        }
+    }
 
 
     // MARK: MKMapViewDelegate implements
@@ -59,16 +81,37 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         else {
             pinView!.annotation = annotation
         }
-        //pinView!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleAnnotationTouched)))
         
         return pinView
     }
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        // deselect so that we can select again when we backk from next view
-        mapView.deselectAnnotation(view.annotation, animated: false)
-        
-        performSegueWithIdentifier("showFlickr", sender: self)
+        if currentState == .Delete {
+            
+            if let annotation = view.annotation as? CoreDataPointAnnotation,
+                context = fetchedResultsController?.managedObjectContext,
+                coord = annotation.data as? MapCoordinate{
+                context.deleteObject(coord)
+                removeAnnotation(coord)
+            }
+            
+        } else {
+            // deselect so that we can select again when we backk from next view
+            
+            performSegueWithIdentifier("showFlickr", sender: self)
+        }
+    }
+    
+    // MARK: IBActions
+    @IBAction func onDelete() {
+        if (currentState == .Place) {
+            switchState(.Delete)
+            barItem.title = "Cancel"
+        } else {
+            switchState(.Place)
+            barItem.title = "Delete"
+            
+        }
     }
     
     // MARK: Private methods
@@ -81,12 +124,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             if let context = fetchedResultsController?.managedObjectContext{
                 
                 // Just create a new note and you're done!
-                let _ = MapCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude, context: context)
+                backgroundDownloadForMapCoordinate( MapCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude, context: context) )
             }
-//            let annotation = MKPointAnnotation()
-//            
-//            annotation.coordinate = coordinate
-//            mapView.addAnnotation(annotation)
         }
     }
     
@@ -95,25 +134,82 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         if let fc = fetchedResultsController{
             for obj in fc.fetchedObjects! {
                 if let coord = obj as? MapCoordinate {
-                    addAnnotation(Double(coord.latitude!), longitude: Double(coord.longitude!))
+                    addAnnotation(coord)
                 }
             }
         }
     }
     
-    func addAnnotation(latitude:Double, longitude:Double)
+    func addAnnotation(coord:MapCoordinate)
     {
-        let annotation = MKPointAnnotation()
+        let latitude = Double(coord.latitude!)
+        let longitude = Double(coord.longitude!)
         
+        let annotation = CoreDataPointAnnotation()
         annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        annotation.data = coord
         mapView.addAnnotation(annotation)
     }
 
-    //func handleAnnotationTouched(gestureRecognizer:UIGestureRecognizer) {
-    //    if let annotationView = gestureRecognizer.view as? MKAnnotationView {
-    //        print((annotationView.annotation?.description)!)
-    //    }
-    //}
+    func removeAnnotation(coord:MapCoordinate)
+    {
+        for annotation in mapView.annotations {
+            if let anno = annotation as? CoreDataPointAnnotation,
+                annoCoord = anno.data as? MapCoordinate
+                where annoCoord == coord
+            {
+                mapView.removeAnnotation(anno)
+                mapView.setNeedsDisplay()
+                return
+            }
+        }
+    }
+    
+    func switchState(state:State ) {
+        if (currentState != state) {
+            currentState = state
+            onStateChanged(state)
+        }
+    }
+    
+    func onStateChanged(state:State) {
+        UIView.animateWithDuration(0.3) {
+            if (state == .Delete) {
+                self.mapView.center.y -= 50
+                self.deleteLabel.center.y -= 50
+            } else {
+                self.mapView.center.y += 50
+                self.deleteLabel.center.y += 50
+            }
+        }
+    }
+    
+    func backgroundDownloadForMapCoordinate(mapCoordinate: MapCoordinate) {
+        performUpdatesUserInitiated { 
+            mapCoordinate.downloading = true
+            FlickrService.retrieveImagesByGeo(mapCoordinate.toLocationCoordinate2D()) { (result, error) in
+                if (error == NetworkError.NoError) {
+                    if let photos = result![Constants.FlickrResponseKeys.Photos],
+                    photo = photos![Constants.FlickrResponseKeys.Photo] as? [AnyObject]
+                    {
+                        for photoData in photo {
+                            if let url = photoData[Constants.FlickrResponseKeys.MediumURL] as? String{
+                                performUIUpdatesOnMain {
+                                    let flickrPhoto = FlickrPhoto(
+                                        id: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.ID, defaultValue: ""),
+                                        url: url,
+                                        mapCoordinate: mapCoordinate,
+                                        context: self.fetchedResultsController!.managedObjectContext)
+                                    flickrPhoto.startDownload()
+                                }
+                            }
+                        }
+                    }
+                }
+                mapCoordinate.downloading = false
+            }
+        }
+    }
 }
 
 // MARK:  - Fetches
@@ -144,15 +240,14 @@ extension MapViewController : NSFetchedResultsControllerDelegate {
             switch(type){
                 
             case .Insert:
-                addAnnotation(Double(coordinate.latitude!), longitude: Double(coordinate.longitude!))
-                
+                addAnnotation(coordinate)
+//                
+//            case .Delete:
+//                removeAnnotation(coordinate)
             default:
                 break
             }
         }
         
-    }
-    
-    func controllerDidChangeContent(controller: NSFetchedResultsController) {
     }
 }

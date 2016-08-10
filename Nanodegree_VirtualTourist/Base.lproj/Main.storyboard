@@ -55,6 +55,9 @@
                             <constraint firstAttribute="trailingMargin" secondItem="6dO-wv-Pgx" secondAttribute="trailing" id="rvh-8L-Kzq"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="mapView" destination="6dO-wv-Pgx" id="0uy-K7-QDB"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Flt-3i-vAX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -78,17 +81,38 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="RI1-Wo-84c"/>
                                 </connections>
                             </mapView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Touch Pin to Delete" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k2g-2Q-3Bg" userLabel="Delete Label">
+                                <rect key="frame" x="0.0" y="600" width="600" height="50"/>
+                                <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="Kp0-oW-AOe"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="20"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="k2g-2Q-3Bg" firstAttribute="width" secondItem="VYd-gd-sVw" secondAttribute="width" id="ED8-m9-1uZ"/>
+                            <constraint firstItem="k2g-2Q-3Bg" firstAttribute="top" secondItem="VYd-gd-sVw" secondAttribute="bottom" id="Qhr-9n-4TG"/>
                             <constraint firstAttribute="trailingMargin" secondItem="VYd-gd-sVw" secondAttribute="trailing" constant="-20" id="UDp-0Y-9Db"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="VYd-gd-sVw" secondAttribute="bottom" id="l8f-J8-yOD"/>
                             <constraint firstItem="VYd-gd-sVw" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="rS1-yD-wjJ"/>
+                            <constraint firstItem="k2g-2Q-3Bg" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="s7k-9e-FB1"/>
                             <constraint firstItem="VYd-gd-sVw" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="zz0-IB-3mB"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="Nt4-cE-mVF"/>
+                    <navigationItem key="navigationItem" id="Nt4-cE-mVF">
+                        <barButtonItem key="rightBarButtonItem" title="Delete" id="hbP-d0-bXt">
+                            <connections>
+                                <action selector="onDelete" destination="BYZ-38-t0r" id="XB8-an-WVh"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
+                        <outlet property="barItem" destination="hbP-d0-bXt" id="1O8-az-2Y7"/>
+                        <outlet property="deleteLabel" destination="k2g-2Q-3Bg" id="8ZL-W9-dRz"/>
                         <outlet property="mapView" destination="VYd-gd-sVw" id="qv2-hR-H5K"/>
                         <segue destination="Wae-dy-9fK" kind="show" identifier="showFlickr" id="x56-Kl-Fb8"/>
                     </connections>

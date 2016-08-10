@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10171" systemVersion="15D21" minimumToolsVersion="Xcode 7.0">
-    <entity name="Image" representedClassName="Image" syncable="YES">
+    <entity name="FlickrPhoto" representedClassName="FlickrPhoto" syncable="YES">
         <attribute name="id" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="url" attributeType="String" syncable="YES"/>
@@ -8,12 +8,13 @@
     </entity>
     <entity name="MapCoordinate" representedClassName="MapCoordinate" syncable="YES">
         <attribute name="createdDate" attributeType="Date" syncable="YES"/>
+        <attribute name="downloading" transient="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="latitude" attributeType="Double" minValueString="-90" maxValueString="90" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" attributeType="Double" minValueString="-180" maxValueString="180" defaultValueString="0.0" syncable="YES"/>
-        <relationship name="rImage" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Image" inverseName="rMapCoord" inverseEntity="Image" syncable="YES"/>
+        <relationship name="rImage" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="FlickrPhoto" inverseName="rMapCoord" inverseEntity="FlickrPhoto" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Image" positionX="-63" positionY="-18" width="128" height="105"/>
-        <element name="MapCoordinate" positionX="178" positionY="72" width="128" height="105"/>
+        <element name="FlickrPhoto" positionX="-63" positionY="-18" width="128" height="105"/>
+        <element name="MapCoordinate" positionX="178" positionY="72" width="128" height="120"/>
     </elements>
 </model>

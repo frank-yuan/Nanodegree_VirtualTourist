@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 class AnyObjectHelper{
     static func parseData<T>(object:AnyObject?, name:String, defaultValue:T) -> T {
@@ -46,5 +47,11 @@ extension UIViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
         alert.addAction(UIAlertAction(title: buttonText, style: .Default, handler: nil))
         presentViewController(alert, animated: true, completion: completionHandler)
+    }
+}
+
+extension MapCoordinate {
+    func toLocationCoordinate2D() -> CLLocationCoordinate2D {
+        return CLLocationCoordinate2D(latitude: Double(latitude!), longitude: Double(longitude!))
     }
 }

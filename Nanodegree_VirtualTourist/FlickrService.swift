@@ -25,7 +25,8 @@ class FlickrService: NSObject {
             Constants.FlickrParameterKeys.SafeSearch: Constants.FlickrParameterValues.UseSafeSearch,
             Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
             Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
-            Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback
+            Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback,
+            Constants.FlickrParameterKeys.PerPage: Constants.FlickrParameterValues.RecordPerPage
         ]
         
         if let url = HttpServiceHelper.buildURL(FlickrServiceConfig(), withPathExtension: "", queryItems: methodParameters)
