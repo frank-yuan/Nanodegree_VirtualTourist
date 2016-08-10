@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class MapViewController: UIViewController, MKMapViewDelegate {
+class MapViewController: UIViewController {
 
     enum State{
         case Place
@@ -60,48 +60,21 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         if let annotation = mapView.selectedAnnotations.last as? CoreDataPointAnnotation {
             if let vc = segue.destinationViewController as? FlickrViewController {
                 vc.mapCoordinate = annotation.data as? MapCoordinate
+//                // Create a fetchrequest
+//                let fr = NSFetchRequest(entityName: "FlickrPhoto")
+//                fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+//                
+//                let pred = NSPredicate(format: "rMapCoord = %@", argumentArray: [annotation.data!])
+//                fr.predicate = pred
+//                // Create the FetchedResultsController
+//                vc.fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
+//                                                                         managedObjectContext: self.fetchedResultsController!.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
             }
         
             mapView.deselectAnnotation(annotation, animated: false)
         }
     }
 
-
-    // MARK: MKMapViewDelegate implements
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        
-        let reuseId = "pin"
-        
-        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
-        
-        if pinView == nil {
-            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            pinView!.pinTintColor = UIColor.redColor()
-        }
-        else {
-            pinView!.annotation = annotation
-        }
-        
-        return pinView
-    }
-    
-    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        if currentState == .Delete {
-            
-            if let annotation = view.annotation as? CoreDataPointAnnotation,
-                context = fetchedResultsController?.managedObjectContext,
-                coord = annotation.data as? MapCoordinate{
-                context.deleteObject(coord)
-                removeAnnotation(coord)
-            }
-            
-        } else {
-            // deselect so that we can select again when we backk from next view
-            
-            performSegueWithIdentifier("showFlickr", sender: self)
-        }
-    }
-    
     // MARK: IBActions
     @IBAction func onDelete() {
         if (currentState == .Place) {
@@ -124,7 +97,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             if let context = fetchedResultsController?.managedObjectContext{
                 
                 // Just create a new note and you're done!
-                backgroundDownloadForMapCoordinate( MapCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude, context: context) )
+                let mapCoordinate = MapCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude, context: context)
+                MapCoordinate.backgroundDownloadForMapCoordinate(mapCoordinate, context: context) {   (result, error) in
+                }
             }
         }
     }
@@ -184,32 +159,45 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    func backgroundDownloadForMapCoordinate(mapCoordinate: MapCoordinate) {
-        performUpdatesUserInitiated { 
-            mapCoordinate.downloading = true
-            FlickrService.retrieveImagesByGeo(mapCoordinate.toLocationCoordinate2D()) { (result, error) in
-                if (error == NetworkError.NoError) {
-                    if let photos = result![Constants.FlickrResponseKeys.Photos],
-                    photo = photos![Constants.FlickrResponseKeys.Photo] as? [AnyObject]
-                    {
-                        for photoData in photo {
-                            if let url = photoData[Constants.FlickrResponseKeys.MediumURL] as? String{
-                                performUIUpdatesOnMain {
-                                    let flickrPhoto = FlickrPhoto(
-                                        id: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.ID, defaultValue: ""),
-                                        url: url,
-                                        mapCoordinate: mapCoordinate,
-                                        context: self.fetchedResultsController!.managedObjectContext)
-                                    flickrPhoto.startDownload()
-                                }
-                            }
-                        }
-                    }
-                }
-                mapCoordinate.downloading = false
+
+}
+
+// MARK: MKMapViewDelegate implements
+extension MapViewController : MKMapViewDelegate  {
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        
+        let reuseId = "pin"
+        
+        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
+        
+        if pinView == nil {
+            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            pinView!.pinTintColor = UIColor.redColor()
+        }
+        else {
+            pinView!.annotation = annotation
+        }
+        
+        return pinView
+    }
+    
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        if currentState == .Delete {
+            
+            if let annotation = view.annotation as? CoreDataPointAnnotation,
+                context = fetchedResultsController?.managedObjectContext,
+                coord = annotation.data as? MapCoordinate{
+                context.deleteObject(coord)
+                removeAnnotation(coord)
             }
+            
+        } else {
+            // deselect so that we can select again when we back from next view
+            
+            performSegueWithIdentifier("showFlickr", sender: self)
         }
     }
+    
 }
 
 // MARK:  - Fetches

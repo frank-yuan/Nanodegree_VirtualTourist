@@ -20,7 +20,7 @@ class FlickrPhoto: NSManagedObject {
             self.init(entity: ent, insertIntoManagedObjectContext: context)
             self.id = id
             self.url = url
-            self.rMapCoord = mapCoordinate
+            //self.rMapCoord = mapCoordinate
         } else {
             fatalError("Unable to find Entity Name")
         }
