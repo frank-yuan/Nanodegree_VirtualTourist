@@ -21,6 +21,7 @@ class FlickrViewController: UIViewController {
     
     private let collectionCellIdentifier = "FlickrImageCell"
     private let cellSpacing:CGFloat = 0.5
+    private var contentCommandQueue = [ContentChangeCommand]()
     
     
     private let coordinateSpan = MKCoordinateSpan(latitudeDelta: 0.112872, longitudeDelta: 0.109863)
@@ -57,12 +58,16 @@ class FlickrViewController: UIViewController {
             MapCoordinate.backgroundDownloadForMapCoordinate(mapCoordinate!, context: stack.context) { (result, error) in
                 if (error == NetworkError.NoError) {
                     if (self.fetchedResultsController?.fetchedObjects?.count > 0) {
-                        self.noImageLabel.hidden = true
-                        self.collectionView.reloadData()
+                        performUIUpdatesOnMain(){
+                            self.noImageLabel.hidden = true
+                            self.collectionView.reloadData()
+                        }
                     }
                 }
             }
         }
+        
+        collectionView.allowsSelection = true
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -81,10 +86,24 @@ class FlickrViewController: UIViewController {
         
     }
     
+    @IBAction func onButtonPressed() {
+        if (collectionView.indexPathsForSelectedItems()?.count > 0) {
+            for index in collectionView.indexPathsForSelectedItems()! {
+                if let cell = collectionView.cellForItemAtIndexPath(index) as? FlickrCollectionViewCell {
+                fetchedResultsController?.managedObjectContext.deleteObject(cell.flickrPhoto!)
+                }
+            }
+        }
+        
+    }
     func resizeCollectionLayout() {
         let count:CGFloat = view.frame.width > view.frame.height ? 5.0 : 3.0
         let size:CGFloat = (view.frame.width - (count + 1) * cellSpacing) / count
         collectionViewFlowLayout.itemSize = CGSize(width: size, height: size)
+    }
+    
+    func updateButtonText() {
+        newCollectionButton!.setTitle(collectionView.indexPathsForSelectedItems()?.count > 0 ? "Delete" :"New Collection", forState: .Normal)
     }
 }
 
@@ -103,22 +122,28 @@ extension FlickrViewController : UICollectionViewDelegate, UICollectionViewDataS
         
         let fp = fetchedResultsController!.objectAtIndexPath(indexPath) as! FlickrPhoto
         
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(collectionCellIdentifier, forIndexPath: indexPath)
-        
-        if let imageView = cell.viewWithTag(100) as? UIImageView{
-            if (fp.image != nil) {
-                imageView.image = UIImage(data: fp.image!)
-            }
-            if let labelView = cell.viewWithTag(200) as? UILabel{
-                labelView.hidden = fp.image != nil
-            }
+        if let cell = collectionView.dequeueReusableCellWithReuseIdentifier(collectionCellIdentifier, forIndexPath: indexPath) as? FlickrCollectionViewCell {
+            
+            cell.flickrPhoto = fp
+            
+            return cell
+        } else {
+            let cell = FlickrCollectionViewCell()
+            
+            cell.flickrPhoto = fp
+            
+            return cell
+            
         }
-        return cell
-    }
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        
     }
     
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        updateButtonText()
+    }
+    
+    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+        updateButtonText()
+    }
     
 }
 
@@ -140,9 +165,12 @@ extension FlickrViewController{
 extension FlickrViewController: NSFetchedResultsControllerDelegate{
     
     
-    func controllerWillChangeContent(controller: NSFetchedResultsController) {
-        //collectionView.beginUpdates()
+    struct ContentChangeCommand {
+        let type : NSFetchedResultsChangeType
+        let indexPath : NSIndexPath?
+        let newIndexPath : NSIndexPath?
     }
+    
     
     func controller(controller: NSFetchedResultsController,
         didChangeSection sectionInfo: NSFetchedResultsSectionInfo,
@@ -173,27 +201,31 @@ extension FlickrViewController: NSFetchedResultsControllerDelegate{
         forChangeType type: NSFetchedResultsChangeType,
         newIndexPath: NSIndexPath?) {
             
-            
-            
-            switch(type){
-                
-            case .Insert:
-                collectionView.insertItemsAtIndexPaths([newIndexPath!])
-                
-            case .Delete:
-                collectionView.deleteItemsAtIndexPaths([indexPath!])
-                
-            case .Update:
-                collectionView.reloadItemsAtIndexPaths([indexPath!])
-                
-            case .Move:
-                collectionView.deleteItemsAtIndexPaths([indexPath!])
-                collectionView.insertItemsAtIndexPaths([newIndexPath!])
-            }
-            
+           contentCommandQueue.append(ContentChangeCommand(type: type, indexPath: indexPath, newIndexPath: newIndexPath))
+        
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        //tableView.endUpdates()
+        for command in contentCommandQueue {
+            
+            
+            switch(command.type){
+                
+            case .Insert:
+                collectionView.insertItemsAtIndexPaths([command.newIndexPath!])
+                
+            case .Delete:
+                collectionView.deleteItemsAtIndexPaths([command.indexPath!])
+                
+            case .Update:
+                collectionView.reloadItemsAtIndexPaths([command.indexPath!])
+                
+            case .Move:
+                collectionView.deleteItemsAtIndexPaths([command.indexPath!])
+                collectionView.insertItemsAtIndexPaths([command.newIndexPath!])
+            }
+        }
+        contentCommandQueue.removeAll()
+        collectionView.reloadData()
     }
 }

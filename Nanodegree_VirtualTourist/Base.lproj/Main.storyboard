@@ -32,7 +32,7 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FlickrImageCell" id="nZ1-ta-4Ye">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FlickrImageCell" id="nZ1-ta-4Ye" customClass="FlickrCollectionViewCell" customModule="Nanodegree_VirtualTourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="165" height="165"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -42,8 +42,11 @@
                                                 <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NC1-Ae-pj8">
                                                     <rect key="frame" x="0.0" y="0.0" width="165" height="165"/>
                                                 </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="200" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XTh-SQ-gpx">
-                                                    <rect key="frame" x="-0.5" y="0.0" width="165" height="165"/>
+                                                <activityIndicatorView opaque="NO" tag="200" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="wHX-cs-UU1">
+                                                    <rect key="frame" x="72" y="73" width="20" height="20"/>
+                                                </activityIndicatorView>
+                                                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="300" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XTh-SQ-gpx">
+                                                    <rect key="frame" x="-1" y="0.0" width="165" height="165"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
@@ -51,16 +54,22 @@
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <color key="backgroundColor" red="0.34046763706004829" green="0.61750339230077911" blue="0.76292539267015713" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstItem="XTh-SQ-gpx" firstAttribute="height" secondItem="NC1-Ae-pj8" secondAttribute="height" id="87T-Aq-Ufp"/>
                                             <constraint firstItem="XTh-SQ-gpx" firstAttribute="centerY" secondItem="NC1-Ae-pj8" secondAttribute="centerY" id="CkP-8d-sc7"/>
                                             <constraint firstItem="XTh-SQ-gpx" firstAttribute="centerX" secondItem="NC1-Ae-pj8" secondAttribute="centerX" id="Czs-v7-LPT"/>
                                             <constraint firstItem="NC1-Ae-pj8" firstAttribute="centerX" secondItem="nZ1-ta-4Ye" secondAttribute="centerX" id="DXz-K8-0fI"/>
                                             <constraint firstItem="NC1-Ae-pj8" firstAttribute="width" secondItem="nZ1-ta-4Ye" secondAttribute="width" id="M8L-AO-R2r"/>
+                                            <constraint firstItem="wHX-cs-UU1" firstAttribute="centerY" secondItem="nZ1-ta-4Ye" secondAttribute="centerY" id="PI2-dk-HPt"/>
                                             <constraint firstItem="NC1-Ae-pj8" firstAttribute="height" secondItem="nZ1-ta-4Ye" secondAttribute="height" id="RVS-ya-owb"/>
+                                            <constraint firstItem="wHX-cs-UU1" firstAttribute="centerX" secondItem="nZ1-ta-4Ye" secondAttribute="centerX" id="bj6-3p-OP6"/>
                                             <constraint firstItem="NC1-Ae-pj8" firstAttribute="centerY" secondItem="nZ1-ta-4Ye" secondAttribute="centerY" id="gwg-l3-cEB"/>
                                             <constraint firstItem="XTh-SQ-gpx" firstAttribute="width" secondItem="NC1-Ae-pj8" secondAttribute="width" id="sdw-VA-P7X"/>
                                         </constraints>
+                                        <connections>
+                                            <outlet property="imageView" destination="NC1-Ae-pj8" id="3dh-zn-Qev"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
