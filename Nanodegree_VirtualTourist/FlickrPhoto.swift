@@ -20,7 +20,7 @@ class FlickrPhoto: NSManagedObject {
             self.init(entity: ent, insertIntoManagedObjectContext: context)
             self.id = id
             self.url = url
-            //self.rMapCoord = mapCoordinate
+            self.rMapCoord = mapCoordinate
         } else {
             fatalError("Unable to find Entity Name")
         }
@@ -29,10 +29,10 @@ class FlickrPhoto: NSManagedObject {
     
     func startDownload() {
         performUpdatesBackground{
-            let image = NSData(contentsOfURL: NSURL(string: self.url!)!)
-            performUIUpdatesOnMain{
-                self.image =  image
-            }
+            self.image = NSData(contentsOfURL: NSURL(string: self.url!)!)
+//            performUIUpdatesOnMain{
+//                self.image =  image
+//            }
         }
     }
 }

@@ -94,15 +94,22 @@ class MapViewController: UIViewController {
         {
             let touchPoint = gestureRecognizer.locationInView(mapView)
             let coordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
-            if let context = fetchedResultsController?.managedObjectContext{
-                
-                // Just create a new note and you're done!
-                let mapCoordinate = MapCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude, context: context)
-                MapCoordinate.backgroundDownloadForMapCoordinate(mapCoordinate, context: context) {   (result, error) in
+            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
+                let mapCoordinate = MapCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude, context: workerContext)
+                mapCoordinate.downloadPhotos(){ (error) in
                 }
-            }
+            })
+            
+//            if let context = fetchedResultsController?.managedObjectContext{
+//                
+//                // Just create a new note and you're done!
+//                let mapCoordinate = MapCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude, context: context)
+//                MapCoordinate.backgroundDownloadForMapCoordinate(mapCoordinate, context: context) {   (result, error) in
+//                }
+//            }
         }
     }
+    
     
     func reloadAnnotations() {
         
@@ -185,9 +192,11 @@ extension MapViewController : MKMapViewDelegate  {
         if currentState == .Delete {
             
             if let annotation = view.annotation as? CoreDataPointAnnotation,
-                context = fetchedResultsController?.managedObjectContext,
+                workerContext = fetchedResultsController?.managedObjectContext,
                 coord = annotation.data as? MapCoordinate{
-                context.deleteObject(coord)
+                //CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
+                    workerContext.deleteObject(coord)
+                //})
                 removeAnnotation(coord)
             }
             

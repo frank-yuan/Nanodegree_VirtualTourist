@@ -26,41 +26,84 @@ class MapCoordinate: NSManagedObject {
         }
     }
     
-    static func backgroundDownloadForMapCoordinate(mapCoordinate: MapCoordinate, context: NSManagedObjectContext, completionHandler:(result:AnyObject?, error: NetworkError) -> Void) {
+    func downloadPhotos(completionHandler:(error: String?) -> Void) {
+        
         performUpdatesUserInitiated {
-            if ((mapCoordinate.downloading) != false) {
+            if ((self.downloading) != false) {
+                completionHandler(error: "Already started")
                 return
             }
-            mapCoordinate.downloading = true
-            FlickrService.retrieveImagesByGeo(mapCoordinate.toLocationCoordinate2D()) { (result, error) in
-                
+            
+            self.downloading = true
+            FlickrService.retrieveImagesByGeo(self.toLocationCoordinate2D()) { (result, error) in
                 if (error == NetworkError.NoError) {
                     
                     if let photos = result![Constants.FlickrResponseKeys.Photos],
                     photo = photos![Constants.FlickrResponseKeys.Photo] as? [AnyObject]
                     {
-                        
-                        for photoData in photo {
-                            
-                            if let url = photoData[Constants.FlickrResponseKeys.MediumURL] as? String{
-                                
-                                performUIUpdatesOnMain {
-                                    
-                                    let flickrPhoto = FlickrPhoto(
-                                        id: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.ID, defaultValue: ""),
-                                        url: url,
-                                        mapCoordinate: mapCoordinate,
-                                        context: context)
-                                    flickrPhoto.rMapCoord = mapCoordinate
-                                    flickrPhoto.startDownload()
-                                }
+                        CoreDataHelper.performCoreDataBackgroundOperation(){ (workerContext) in
+                            // delete exist ones in set
+                            for item in self.rImage! {
+                                workerContext.deleteObject(item as! NSManagedObject)
                             }
+                            for photoData in photo {
+                                
+                                let flickrPhoto = FlickrPhoto(
+                                    id: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.ID, defaultValue: ""),
+                                    url: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.MediumURL, defaultValue: ""),
+                                    mapCoordinate: self,
+                                    context: workerContext)
+                                //flickrPhoto.rMapCoord = self
+                                flickrPhoto.startDownload()
+                            }
+                            self.downloading = false
+                            completionHandler(error: nil)
                         }
+                        
                     }
+                } else {
+                    self.downloading = false
+                    completionHandler(error: "Error with code:\(error.rawValue)")
                 }
-                mapCoordinate.downloading = false
-                completionHandler(result: result, error: error)
             }
         }
     }
+    
+//    static func backgroundDownloadForMapCoordinate(mapCoordinate: MapCoordinate, context: NSManagedObjectContext, completionHandler:(result:AnyObject?, error: NetworkError) -> Void) {
+//        performUpdatesUserInitiated {
+//            if ((mapCoordinate.downloading) != false) {
+//                return
+//            }
+//            mapCoordinate.downloading = true
+//            FlickrService.retrieveImagesByGeo(mapCoordinate.toLocationCoordinate2D()) { (result, error) in
+//                
+//                if (error == NetworkError.NoError) {
+//                    
+//                    if let photos = result![Constants.FlickrResponseKeys.Photos],
+//                    photo = photos![Constants.FlickrResponseKeys.Photo] as? [AnyObject]
+//                    {
+//                        
+//                        for photoData in photo {
+//                            
+//                            if let url = photoData[Constants.FlickrResponseKeys.MediumURL] as? String{
+//                                
+//                                performUIUpdatesOnMain {
+//                                    
+//                                    let flickrPhoto = FlickrPhoto(
+//                                        id: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.ID, defaultValue: ""),
+//                                        url: url,
+//                                        mapCoordinate: mapCoordinate,
+//                                        context: context)
+//                                    flickrPhoto.rMapCoord = mapCoordinate
+//                                    flickrPhoto.startDownload()
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//                mapCoordinate.downloading = false
+//                completionHandler(result: result, error: error)
+//            }
+//        }
+//    }
 }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 import MapKit
 
 class AnyObjectHelper{
@@ -53,5 +54,14 @@ extension UIViewController {
 extension MapCoordinate {
     func toLocationCoordinate2D() -> CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: Double(latitude!), longitude: Double(longitude!))
+    }
+}
+
+class CoreDataHelper : NSObject {
+    
+    static func performCoreDataBackgroundOperation(handler:(workerContext: NSManagedObjectContext) -> ()) {
+        if let appDelegate = UIApplication.sharedApplication().delegate as? AppDelegate {
+            appDelegate.stack.performBackgroundBatchOperation(handler)
+        }
     }
 }
