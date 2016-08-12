@@ -54,17 +54,6 @@ class FlickrViewController: UIViewController {
         if (fetchedResultsController?.fetchedObjects?.count > 0) {
             self.noImageLabel.hidden = true
             self.collectionView.reloadData()
-        } else {
-            MapCoordinate.backgroundDownloadForMapCoordinate(mapCoordinate!, context: stack.context) { (result, error) in
-                if (error == NetworkError.NoError) {
-                    if (self.fetchedResultsController?.fetchedObjects?.count > 0) {
-                        performUIUpdatesOnMain(){
-                            self.noImageLabel.hidden = true
-                            self.collectionView.reloadData()
-                        }
-                    }
-                }
-            }
         }
         
         collectionView.allowsSelection = true
@@ -119,6 +108,8 @@ extension FlickrViewController : UICollectionViewDelegate, UICollectionViewDataS
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        
+        noImageLabel.hidden = true
         
         let fp = fetchedResultsController!.objectAtIndexPath(indexPath) as! FlickrPhoto
         
@@ -206,25 +197,27 @@ extension FlickrViewController: NSFetchedResultsControllerDelegate{
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        for command in contentCommandQueue {
-            
-            
-            switch(command.type){
+        collectionView.performBatchUpdates({ 
+            for command in self.contentCommandQueue {
                 
-            case .Insert:
-                collectionView.insertItemsAtIndexPaths([command.newIndexPath!])
                 
-            case .Delete:
-                collectionView.deleteItemsAtIndexPaths([command.indexPath!])
-                
-            case .Update:
-                collectionView.reloadItemsAtIndexPaths([command.indexPath!])
-                
-            case .Move:
-                collectionView.deleteItemsAtIndexPaths([command.indexPath!])
-                collectionView.insertItemsAtIndexPaths([command.newIndexPath!])
+                switch(command.type){
+                    
+                case .Insert:
+                    self.collectionView.insertItemsAtIndexPaths([command.newIndexPath!])
+                    
+                case .Delete:
+                    self.collectionView.deleteItemsAtIndexPaths([command.indexPath!])
+                    
+                case .Update:
+                    self.collectionView.reloadItemsAtIndexPaths([command.indexPath!])
+                    
+                case .Move:
+                    self.collectionView.deleteItemsAtIndexPaths([command.indexPath!])
+                    self.collectionView.insertItemsAtIndexPaths([command.newIndexPath!])
+                }
             }
-        }
+            }, completion: nil)
         contentCommandQueue.removeAll()
         collectionView.reloadData()
     }

@@ -28,11 +28,12 @@ class FlickrPhoto: NSManagedObject {
     }
     
     func startDownload() {
-        performUpdatesBackground{
-            self.image = NSData(contentsOfURL: NSURL(string: self.url!)!)
-//            performUIUpdatesOnMain{
-//                self.image =  image
-//            }
+        performUpdatesUserInitiated{
+            let image = NSData(contentsOfURL: NSURL(string: self.url!)!)
+            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
+                self.image = image
+            })
+            
         }
     }
 }
