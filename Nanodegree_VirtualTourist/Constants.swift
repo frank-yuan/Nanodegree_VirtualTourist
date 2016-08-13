@@ -60,6 +60,7 @@ struct Constants {
         static let Photo = "photo"
         static let Title = "title"
         static let MediumURL = "url_m"
+        static let Page = "page"
         static let Pages = "pages"
         static let Total = "total"
     }
@@ -67,6 +68,11 @@ struct Constants {
     // MARK: Flickr Response Values
     struct FlickrResponseValues {
         static let OKStatus = "ok"
+    }
+    
+    struct EntityName{
+        static let MapCoordinate = "MapCoordinate"
+        static let FlickrPhoto = "FlickrPhoto"
     }
     
     // FIX: As of Swift 2.2, using strings for selectors has been deprecated. Instead, #selector(methodName) should be used.

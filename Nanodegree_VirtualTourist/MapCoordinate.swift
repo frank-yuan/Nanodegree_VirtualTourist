@@ -16,14 +16,26 @@ class MapCoordinate: NSManagedObject {
 
     convenience init(latitude:Double, longitude:Double, context: NSManagedObjectContext)
     {
-        if let ent = NSEntityDescription.entityForName("MapCoordinate", inManagedObjectContext: context) {
+        if let ent = NSEntityDescription.entityForName(Constants.EntityName.MapCoordinate, inManagedObjectContext: context) {
             self.init(entity: ent, insertIntoManagedObjectContext: context)
             self.latitude = latitude
             self.longitude = longitude
-            self.createdDate = NSDate.init(timeIntervalSinceNow: 0)
+            self.id = "\(latitude)\(longitude)"
         } else {
             fatalError("Unable to find Entity Name")
         }
+    }
+    
+    func getSameObjectInContext(workerContext:NSManagedObjectContext) -> MapCoordinate? {
+        let fr = NSFetchRequest(entityName: Constants.EntityName.MapCoordinate)
+        fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+        let pred = NSPredicate(format: "id = %@", argumentArray: [self.id!])
+        fr.predicate = pred
+        let fetchResults = try! workerContext.executeFetchRequest(fr)
+        if let targetObject = fetchResults.first as? MapCoordinate {
+            return targetObject
+        }
+        return nil
     }
     
     func downloadPhotos(completionHandler:(error: String?) -> Void) {
@@ -35,31 +47,44 @@ class MapCoordinate: NSManagedObject {
             }
             
             self.downloading = true
-            FlickrService.retrieveImagesByGeo(self.toLocationCoordinate2D()) { (result, error) in
+            var page = Int(self.totalPage!)
+            page = page == 0 ? 1 :  (Int(arc4random()) % page)
+            FlickrService.retrieveImagesByGeo(self.toLocationCoordinate2D(), page: page) { (result, error) in
                 if (error == NetworkError.NoError) {
                     
                     if let photos = result![Constants.FlickrResponseKeys.Photos],
                     photo = photos![Constants.FlickrResponseKeys.Photo] as? [AnyObject]
                     {
                         CoreDataHelper.performCoreDataBackgroundOperation(){ (workerContext) in
-                            // delete exist ones in set
-                            for item in self.rImage! {
-                                workerContext.deleteObject(item as! NSManagedObject)
-                            }
-                            for photoData in photo {
+                            
+                            // find self in background context
+                            if let targetObject = self.getSameObjectInContext(workerContext){
                                 
-                                let flickrPhoto = FlickrPhoto(
-                                    id: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.ID, defaultValue: ""),
-                                    url: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.MediumURL, defaultValue: ""),
-                                    mapCoordinate: self,
-                                    context: workerContext)
-                                //flickrPhoto.rMapCoord = self
-                                flickrPhoto.startDownload()
+                                // overwrite page and total pages
+                                targetObject.currentPage = AnyObjectHelper.parseData(photos, name: Constants.FlickrResponseKeys.Page, defaultValue: 0)
+                                targetObject.totalPage = AnyObjectHelper.parseData(photos, name: Constants.FlickrResponseKeys.Pages, defaultValue: 0)
+                                
+                                // delete exist ones in set
+                                for item in targetObject.rImage! {
+                                    workerContext.deleteObject(item as! NSManagedObject)
+                                }
+                                // create new photos
+                                for photoData in photo {
+                                    
+                                    let flickrPhoto = FlickrPhoto(
+                                        id: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.ID, defaultValue: ""),
+                                        url: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.MediumURL, defaultValue: ""),
+                                        mapCoordinate: targetObject,
+                                        context: workerContext)
+                                    flickrPhoto.startDownload()
+                                }
+                                completionHandler(error: nil)
+                            }else {
+                                completionHandler(error: "Cannot find same object")
                             }
+                            
                             self.downloading = false
-                            completionHandler(error: nil)
                         }
-                        
                     }
                 } else {
                     self.downloading = false
@@ -68,42 +93,4 @@ class MapCoordinate: NSManagedObject {
             }
         }
     }
-    
-//    static func backgroundDownloadForMapCoordinate(mapCoordinate: MapCoordinate, context: NSManagedObjectContext, completionHandler:(result:AnyObject?, error: NetworkError) -> Void) {
-//        performUpdatesUserInitiated {
-//            if ((mapCoordinate.downloading) != false) {
-//                return
-//            }
-//            mapCoordinate.downloading = true
-//            FlickrService.retrieveImagesByGeo(mapCoordinate.toLocationCoordinate2D()) { (result, error) in
-//                
-//                if (error == NetworkError.NoError) {
-//                    
-//                    if let photos = result![Constants.FlickrResponseKeys.Photos],
-//                    photo = photos![Constants.FlickrResponseKeys.Photo] as? [AnyObject]
-//                    {
-//                        
-//                        for photoData in photo {
-//                            
-//                            if let url = photoData[Constants.FlickrResponseKeys.MediumURL] as? String{
-//                                
-//                                performUIUpdatesOnMain {
-//                                    
-//                                    let flickrPhoto = FlickrPhoto(
-//                                        id: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.ID, defaultValue: ""),
-//                                        url: url,
-//                                        mapCoordinate: mapCoordinate,
-//                                        context: context)
-//                                    flickrPhoto.rMapCoord = mapCoordinate
-//                                    flickrPhoto.startDownload()
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//                mapCoordinate.downloading = false
-//                completionHandler(result: result, error: error)
-//            }
-//        }
-//    }
 }

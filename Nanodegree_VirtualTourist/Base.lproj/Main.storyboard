@@ -40,32 +40,22 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NC1-Ae-pj8">
-                                                    <rect key="frame" x="0.0" y="0.0" width="165" height="165"/>
+                                                    <rect key="frame" x="2.5" y="2.5" width="160" height="160"/>
                                                 </imageView>
                                                 <activityIndicatorView opaque="NO" tag="200" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="wHX-cs-UU1">
                                                     <rect key="frame" x="72" y="73" width="20" height="20"/>
                                                 </activityIndicatorView>
-                                                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="300" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XTh-SQ-gpx">
-                                                    <rect key="frame" x="-1" y="0.0" width="165" height="165"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                         <color key="backgroundColor" red="0.34046763706004829" green="0.61750339230077911" blue="0.76292539267015713" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
-                                            <constraint firstItem="XTh-SQ-gpx" firstAttribute="height" secondItem="NC1-Ae-pj8" secondAttribute="height" id="87T-Aq-Ufp"/>
-                                            <constraint firstItem="XTh-SQ-gpx" firstAttribute="centerY" secondItem="NC1-Ae-pj8" secondAttribute="centerY" id="CkP-8d-sc7"/>
-                                            <constraint firstItem="XTh-SQ-gpx" firstAttribute="centerX" secondItem="NC1-Ae-pj8" secondAttribute="centerX" id="Czs-v7-LPT"/>
                                             <constraint firstItem="NC1-Ae-pj8" firstAttribute="centerX" secondItem="nZ1-ta-4Ye" secondAttribute="centerX" id="DXz-K8-0fI"/>
-                                            <constraint firstItem="NC1-Ae-pj8" firstAttribute="width" secondItem="nZ1-ta-4Ye" secondAttribute="width" id="M8L-AO-R2r"/>
+                                            <constraint firstItem="NC1-Ae-pj8" firstAttribute="width" secondItem="nZ1-ta-4Ye" secondAttribute="width" constant="-5" id="M8L-AO-R2r"/>
                                             <constraint firstItem="wHX-cs-UU1" firstAttribute="centerY" secondItem="nZ1-ta-4Ye" secondAttribute="centerY" id="PI2-dk-HPt"/>
-                                            <constraint firstItem="NC1-Ae-pj8" firstAttribute="height" secondItem="nZ1-ta-4Ye" secondAttribute="height" id="RVS-ya-owb"/>
+                                            <constraint firstItem="NC1-Ae-pj8" firstAttribute="height" secondItem="nZ1-ta-4Ye" secondAttribute="height" constant="-5" id="RVS-ya-owb"/>
                                             <constraint firstItem="wHX-cs-UU1" firstAttribute="centerX" secondItem="nZ1-ta-4Ye" secondAttribute="centerX" id="bj6-3p-OP6"/>
                                             <constraint firstItem="NC1-Ae-pj8" firstAttribute="centerY" secondItem="nZ1-ta-4Ye" secondAttribute="centerY" id="gwg-l3-cEB"/>
-                                            <constraint firstItem="XTh-SQ-gpx" firstAttribute="width" secondItem="NC1-Ae-pj8" secondAttribute="width" id="sdw-VA-P7X"/>
                                         </constraints>
                                         <connections>
                                             <outlet property="imageView" destination="NC1-Ae-pj8" id="3dh-zn-Qev"/>
@@ -90,6 +80,9 @@
                                     <constraint firstAttribute="height" constant="50" id="tJU-WS-FtO"/>
                                 </constraints>
                                 <state key="normal" title="New Collection"/>
+                                <connections>
+                                    <action selector="onButtonPressed" destination="Wae-dy-9fK" eventType="touchUpInside" id="gWq-9U-LD2"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

@@ -15,9 +15,7 @@ class FlickrCollectionViewCell: UICollectionViewCell {
     var flickrPhoto : FlickrPhoto? {
         didSet{
             if let fp = flickrPhoto {
-                if (fp.image != nil) {
-                    setImage(fp.image)
-                }
+                setImage(fp.image)
             }
             onChanged()
         }

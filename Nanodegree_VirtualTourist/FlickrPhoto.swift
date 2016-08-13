@@ -13,10 +13,9 @@ import CoreData
 class FlickrPhoto: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
-
     convenience init(id:String, url:String, mapCoordinate: MapCoordinate, context: NSManagedObjectContext)
     {
-        if let ent = NSEntityDescription.entityForName("FlickrPhoto", inManagedObjectContext: context) {
+        if let ent = NSEntityDescription.entityForName(Constants.EntityName.FlickrPhoto, inManagedObjectContext: context) {
             self.init(entity: ent, insertIntoManagedObjectContext: context)
             self.id = id
             self.url = url
@@ -29,9 +28,11 @@ class FlickrPhoto: NSManagedObject {
     
     func startDownload() {
         performUpdatesUserInitiated{
+            self.downloading = true
             let image = NSData(contentsOfURL: NSURL(string: self.url!)!)
             CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
                 self.image = image
+                self.downloading = false
             })
             
         }

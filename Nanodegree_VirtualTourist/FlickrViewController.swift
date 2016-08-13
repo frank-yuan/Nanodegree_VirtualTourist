@@ -43,7 +43,7 @@ class FlickrViewController: UIViewController {
         let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let stack = delegate.stack
         
-        let fr = NSFetchRequest(entityName: "FlickrPhoto")
+        let fr = NSFetchRequest(entityName: Constants.EntityName.FlickrPhoto)
         fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
         
         let pred = NSPredicate(format: "rMapCoord = %@", argumentArray: [self.mapCoordinate!])
@@ -52,11 +52,15 @@ class FlickrViewController: UIViewController {
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
                                                                    managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
         if (fetchedResultsController?.fetchedObjects?.count > 0) {
-            self.noImageLabel.hidden = true
             self.collectionView.reloadData()
+        } else if mapCoordinate?.downloading == false {
+            mapCoordinate?.downloadPhotos({ (error) in
+                self.collectionView.reloadData()
+            })
         }
         
         collectionView.allowsSelection = true
+        collectionView.allowsMultipleSelection = true
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -77,11 +81,29 @@ class FlickrViewController: UIViewController {
     
     @IBAction func onButtonPressed() {
         if (collectionView.indexPathsForSelectedItems()?.count > 0) {
-            for index in collectionView.indexPathsForSelectedItems()! {
-                if let cell = collectionView.cellForItemAtIndexPath(index) as? FlickrCollectionViewCell {
-                fetchedResultsController?.managedObjectContext.deleteObject(cell.flickrPhoto!)
+            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
+                var ids = [String]()
+                for index in self.collectionView.indexPathsForSelectedItems()! {
+                    if let cell = self.collectionView.cellForItemAtIndexPath(index) as? FlickrCollectionViewCell {
+                        ids.append((cell.flickrPhoto?.id)!)
+                    }
                 }
-            }
+                let fr = NSFetchRequest(entityName: "FlickrPhoto")
+                fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+                
+                let pred = NSPredicate(format: "id = %@", argumentArray: ids)
+                fr.predicate = pred
+                let fetchResults = try! workerContext.executeFetchRequest(fr)
+                // TODO: Why only one result
+                for fetchResult in fetchResults {
+                    workerContext.deleteObject(fetchResult as! NSManagedObject)
+                }
+            })
+        }
+        else {
+            mapCoordinate?.downloadPhotos({ (error) in
+                
+            })
         }
         
     }
@@ -113,29 +135,29 @@ extension FlickrViewController : UICollectionViewDelegate, UICollectionViewDataS
         
         let fp = fetchedResultsController!.objectAtIndexPath(indexPath) as! FlickrPhoto
         
-        if let cell = collectionView.dequeueReusableCellWithReuseIdentifier(collectionCellIdentifier, forIndexPath: indexPath) as? FlickrCollectionViewCell {
-            
-            cell.flickrPhoto = fp
-            
-            return cell
-        } else {
-            let cell = FlickrCollectionViewCell()
-            
-            cell.flickrPhoto = fp
-            
-            return cell
-            
-        }
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(collectionCellIdentifier, forIndexPath: indexPath) as! FlickrCollectionViewCell
+        
+        cell.flickrPhoto = fp
+        
+        cell.selectedBackgroundView?.backgroundColor = UIColor.greenColor()
+        return cell
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         updateButtonText()
+        let cell = collectionView.cellForItemAtIndexPath(indexPath)
+        cell?.backgroundColor = UIColor.greenColor()
     }
     
     func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
         updateButtonText()
+        let cell = collectionView.cellForItemAtIndexPath(indexPath)
+        cell?.backgroundColor = UIColor.blueColor()
     }
     
+    func collectionView(collectionView: UICollectionView, shouldHighlightItemAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
 }
 
 // MARK:  - Fetches

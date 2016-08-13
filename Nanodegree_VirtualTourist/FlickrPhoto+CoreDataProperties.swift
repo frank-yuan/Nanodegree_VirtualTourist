@@ -2,7 +2,7 @@
 //  FlickrPhoto+CoreDataProperties.swift
 //  Nanodegree_VirtualTourist
 //
-//  Created by Xuan Yuan (Frank) on 8/10/16.
+//  Created by Xuan Yuan (Frank) on 8/13/16.
 //  Copyright © 2016 frank-yuan. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
@@ -17,6 +17,7 @@ extension FlickrPhoto {
     @NSManaged var id: String?
     @NSManaged var image: NSData?
     @NSManaged var url: String?
+    @NSManaged var downloading: NSNumber?
     @NSManaged var rMapCoord: MapCoordinate?
 
 }

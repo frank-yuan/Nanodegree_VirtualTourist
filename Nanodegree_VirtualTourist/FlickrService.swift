@@ -16,7 +16,7 @@ class FlickrService: NSObject {
         var ApiPath: String { return Constants.Flickr.APIPath }
     }
     
-    static func retrieveImagesByGeo(location:CLLocationCoordinate2D, completionHandler:(result:AnyObject?, error:NetworkError) -> Void) {
+    static func retrieveImagesByGeo(location:CLLocationCoordinate2D, page: Int, completionHandler:(result:AnyObject?, error:NetworkError) -> Void) {
         
         let methodParameters = [
             Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.SearchMethod,
@@ -26,7 +26,8 @@ class FlickrService: NSObject {
             Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
             Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
             Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback,
-            Constants.FlickrParameterKeys.PerPage: Constants.FlickrParameterValues.RecordPerPage
+            Constants.FlickrParameterKeys.PerPage: Constants.FlickrParameterValues.RecordPerPage,
+            Constants.FlickrParameterKeys.Page: "\(page)"
         ]
         
         if let url = HttpServiceHelper.buildURL(FlickrServiceConfig(), withPathExtension: "", queryItems: methodParameters)

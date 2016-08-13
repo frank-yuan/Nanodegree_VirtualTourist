@@ -46,8 +46,8 @@ class MapViewController: UIViewController {
         let stack = delegate.stack
         
         // Create a fetchrequest
-        let fr = NSFetchRequest(entityName: "MapCoordinate")
-        fr.sortDescriptors = [NSSortDescriptor(key: "createdDate", ascending: true)]
+        let fr = NSFetchRequest(entityName: Constants.EntityName.MapCoordinate)
+        fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
         //    NSSortDescriptor(key: "creationDate", ascending: false)]
         
         // Create the FetchedResultsController
@@ -60,15 +60,6 @@ class MapViewController: UIViewController {
         if let annotation = mapView.selectedAnnotations.last as? CoreDataPointAnnotation {
             if let vc = segue.destinationViewController as? FlickrViewController {
                 vc.mapCoordinate = annotation.data as? MapCoordinate
-//                // Create a fetchrequest
-//                let fr = NSFetchRequest(entityName: "FlickrPhoto")
-//                fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-//                
-//                let pred = NSPredicate(format: "rMapCoord = %@", argumentArray: [annotation.data!])
-//                fr.predicate = pred
-//                // Create the FetchedResultsController
-//                vc.fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
-//                                                                         managedObjectContext: self.fetchedResultsController!.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
             }
         
             mapView.deselectAnnotation(annotation, animated: false)
