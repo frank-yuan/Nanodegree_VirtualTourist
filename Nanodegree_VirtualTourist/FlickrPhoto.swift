@@ -30,12 +30,13 @@ class FlickrPhoto: NSManagedObject {
         performUpdatesUserInitiated{
             self.downloading = true
             let image = NSData(contentsOfURL: NSURL(string: self.url!)!)
+            let entityId = self.id!
             CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
                 
                 // build fetch request to find self in background context
                 let fr = NSFetchRequest(entityName: Constants.EntityName.FlickrPhoto)
                 fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-                let pred = NSPredicate(format: "id = %@", argumentArray: [self.id!])
+                let pred = NSPredicate(format: "id = %@", argumentArray: [entityId])
                 fr.predicate = pred
                 
                 let fetchResults = try! workerContext.executeFetchRequest(fr)

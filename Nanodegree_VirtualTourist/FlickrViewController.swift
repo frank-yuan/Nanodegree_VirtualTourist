@@ -19,12 +19,12 @@ class FlickrViewController: UIViewController {
     @IBOutlet weak var newCollectionButton : UIButton!
     
     
+    private let coordinateSpan = MKCoordinateSpan(latitudeDelta: 0.112872, longitudeDelta: 0.109863)
     private let collectionCellIdentifier = "FlickrImageCell"
     private let cellSpacing:CGFloat = 0.5
     private var contentCommandQueue = [ContentChangeCommand]()
     
     
-    private let coordinateSpan = MKCoordinateSpan(latitudeDelta: 0.112872, longitudeDelta: 0.109863)
     
     var mapCoordinate : MapCoordinate?
     
@@ -34,6 +34,7 @@ class FlickrViewController: UIViewController {
             executeSearch()
         }
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -50,9 +51,11 @@ class FlickrViewController: UIViewController {
                                                                    managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
         if (fetchedResultsController?.fetchedObjects?.count > 0) {
             self.collectionView.reloadData()
+            configureUI()
         } else if mapCoordinate?.downloading == false {
             mapCoordinate?.downloadPhotos({ (error) in
                 self.collectionView.reloadData()
+                self.configureUI()
             })
         }
         
@@ -76,45 +79,23 @@ class FlickrViewController: UIViewController {
         
     }
     
-    @IBAction func onButtonPressed() {
-        if (collectionView.indexPathsForSelectedItems()?.count > 0) {
-            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
-                var ids = [String]()
-                for index in self.collectionView.indexPathsForSelectedItems()! {
-                    if let cell = self.collectionView.cellForItemAtIndexPath(index) as? FlickrCollectionViewCell {
-                        ids.append((cell.flickrPhoto?.id)!)
-                    }
-                }
-                let fr = NSFetchRequest(entityName: "FlickrPhoto")
-                fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-                
-                let pred = NSPredicate(format: "id IN %@", argumentArray: [ids])
-                fr.predicate = pred
-                let fetchResults = try! workerContext.executeFetchRequest(fr)
-                // TODO: Why only one result
-                for fetchResult in fetchResults {
-                    workerContext.deleteObject(fetchResult as! NSManagedObject)
-                }
-            })
-        }
-        else {
-            mapCoordinate?.downloadPhotos({ (error) in
-                
-            })
-        }
-        
-    }
     func resizeCollectionLayout() {
         let count:CGFloat = view.frame.width > view.frame.height ? 5.0 : 3.0
         let size:CGFloat = (view.frame.width - (count + 1) * cellSpacing) / count
         collectionViewFlowLayout.itemSize = CGSize(width: size, height: size)
     }
     
-    func updateButtonText() {
-        newCollectionButton!.setTitle(collectionView.indexPathsForSelectedItems()?.count > 0 ? "Delete" :"New Collection", forState: .Normal)
+    func configureUI() {
+        noImageLabel.hidden = fetchedResultsController?.fetchedObjects!.count != 0
     }
+    
+    @IBAction func onButtonPressed() {
+        mapCoordinate?.downloadPhotos({ (error) in })
+    }
+    
 }
 
+// MARK:  - Collection View Delegates
 extension FlickrViewController : UICollectionViewDelegate, UICollectionViewDataSource{
     
     
@@ -128,35 +109,42 @@ extension FlickrViewController : UICollectionViewDelegate, UICollectionViewDataS
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
-        noImageLabel.hidden = true
-        
         let fp = fetchedResultsController!.objectAtIndexPath(indexPath) as! FlickrPhoto
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(collectionCellIdentifier, forIndexPath: indexPath) as! FlickrCollectionViewCell
         
         cell.flickrPhoto = fp
         
-        cell.selectedBackgroundView?.backgroundColor = UIColor.greenColor()
         return cell
     }
     
+    func collectionView(collectionView: UICollectionView, shouldSelectItemAtIndexPath indexPath: NSIndexPath) -> Bool {
+        
+        if let cell = collectionView.cellForItemAtIndexPath(indexPath) as? FlickrCollectionViewCell {
+            if cell.imageView.image != nil {
+                return true
+            }
+        }
+        return false
+    }
+    
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath)
-        cell?.backgroundColor = Constants.UI.CollectionViewBackgroundColor.highlighted
-        
-        updateButtonText()
+        if let cell = collectionView.cellForItemAtIndexPath(indexPath) as? FlickrCollectionViewCell {
+            
+            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
+                let fr = NSFetchRequest(entityName: "FlickrPhoto")
+                fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+                
+                let pred = NSPredicate(format: "id == %@", argumentArray: [cell.flickrPhoto!.id!])
+                fr.predicate = pred
+                
+                let fetchResults = try! workerContext.executeFetchRequest(fr)
+                workerContext.deleteObject(fetchResults[0] as! NSManagedObject)
+                
+            })
+        }
     }
     
-    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath)
-        cell?.backgroundColor = Constants.UI.CollectionViewBackgroundColor.normal
-        
-        updateButtonText()
-    }
-    
-    func collectionView(collectionView: UICollectionView, shouldHighlightItemAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return true
-    }
 }
 
 // MARK:  - Fetches
@@ -173,7 +161,7 @@ extension FlickrViewController{
     }
 }
 
-// MARK:  - Delegate
+// MARK:  - Fetch Results Controller Delegate
 extension FlickrViewController: NSFetchedResultsControllerDelegate{
     
     
@@ -185,40 +173,40 @@ extension FlickrViewController: NSFetchedResultsControllerDelegate{
     
     
     func controller(controller: NSFetchedResultsController,
-        didChangeSection sectionInfo: NSFetchedResultsSectionInfo,
-        atIndex sectionIndex: Int,
-        forChangeType type: NSFetchedResultsChangeType) {
+                    didChangeSection sectionInfo: NSFetchedResultsSectionInfo,
+                                     atIndex sectionIndex: Int,
+                                             forChangeType type: NSFetchedResultsChangeType) {
+        
+        let set = NSIndexSet(index: sectionIndex)
+        
+        switch (type){
             
-            let set = NSIndexSet(index: sectionIndex)
+        case .Insert:
+            collectionView.insertSections(set)
             
-            switch (type){
-                
-            case .Insert:
-                collectionView.insertSections(set)
-                
-            case .Delete:
-                collectionView.deleteSections(set)
-                
-            default:
-                // irrelevant in our case
-                break
-                
-            }
+        case .Delete:
+            collectionView.deleteSections(set)
+            
+        default:
+            // irrelevant in our case
+            break
+            
+        }
     }
     
     
     func controller(controller: NSFetchedResultsController,
-        didChangeObject anObject: AnyObject,
-        atIndexPath indexPath: NSIndexPath?,
-        forChangeType type: NSFetchedResultsChangeType,
-        newIndexPath: NSIndexPath?) {
-            
-           contentCommandQueue.append(ContentChangeCommand(type: type, indexPath: indexPath, newIndexPath: newIndexPath))
+                    didChangeObject anObject: AnyObject,
+                                    atIndexPath indexPath: NSIndexPath?,
+                                                forChangeType type: NSFetchedResultsChangeType,
+                                                              newIndexPath: NSIndexPath?) {
+        
+        contentCommandQueue.append(ContentChangeCommand(type: type, indexPath: indexPath, newIndexPath: newIndexPath))
         
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        collectionView.performBatchUpdates({ 
+        collectionView.performBatchUpdates({
             for command in self.contentCommandQueue {
                 
                 
@@ -241,6 +229,6 @@ extension FlickrViewController: NSFetchedResultsControllerDelegate{
             }, completion: nil)
         contentCommandQueue.removeAll()
         collectionView.reloadData()
-        updateButtonText()
+        configureUI()
     }
 }

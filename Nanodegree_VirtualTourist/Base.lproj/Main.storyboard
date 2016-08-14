@@ -40,7 +40,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NC1-Ae-pj8">
-                                                    <rect key="frame" x="2.5" y="2.5" width="160" height="160"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="165" height="165"/>
                                                 </imageView>
                                                 <activityIndicatorView opaque="NO" tag="200" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="wHX-cs-UU1">
                                                     <rect key="frame" x="72" y="73" width="20" height="20"/>
@@ -51,9 +51,9 @@
                                         <color key="backgroundColor" red="0.33725490196078434" green="0.61960784313725492" blue="0.76078431372549016" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstItem="NC1-Ae-pj8" firstAttribute="centerX" secondItem="nZ1-ta-4Ye" secondAttribute="centerX" id="DXz-K8-0fI"/>
-                                            <constraint firstItem="NC1-Ae-pj8" firstAttribute="width" secondItem="nZ1-ta-4Ye" secondAttribute="width" constant="-5" id="M8L-AO-R2r"/>
+                                            <constraint firstItem="NC1-Ae-pj8" firstAttribute="width" secondItem="nZ1-ta-4Ye" secondAttribute="width" id="M8L-AO-R2r"/>
                                             <constraint firstItem="wHX-cs-UU1" firstAttribute="centerY" secondItem="nZ1-ta-4Ye" secondAttribute="centerY" id="PI2-dk-HPt"/>
-                                            <constraint firstItem="NC1-Ae-pj8" firstAttribute="height" secondItem="nZ1-ta-4Ye" secondAttribute="height" constant="-5" id="RVS-ya-owb"/>
+                                            <constraint firstItem="NC1-Ae-pj8" firstAttribute="height" secondItem="nZ1-ta-4Ye" secondAttribute="height" id="RVS-ya-owb"/>
                                             <constraint firstItem="wHX-cs-UU1" firstAttribute="centerX" secondItem="nZ1-ta-4Ye" secondAttribute="centerX" id="bj6-3p-OP6"/>
                                             <constraint firstItem="NC1-Ae-pj8" firstAttribute="centerY" secondItem="nZ1-ta-4Ye" secondAttribute="centerY" id="gwg-l3-cEB"/>
                                         </constraints>
