@@ -72,8 +72,7 @@ class MapCoordinate: NSManagedObject {
                                 for photoData in photo {
                                     
                                     let flickrPhoto = FlickrPhoto(
-                                        id: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.ID, defaultValue: ""),
-                                        url: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.MediumURL, defaultValue: ""),
+                                        hashObject: photoData,
                                         mapCoordinate: targetObject,
                                         context: workerContext)
                                     flickrPhoto.startDownload()

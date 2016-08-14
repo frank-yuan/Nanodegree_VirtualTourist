@@ -11,18 +11,25 @@ import MapKit
 import CoreData
 
 class FlickrViewController: UIViewController {
+    enum State{
+        case Normal
+        case Delete
+    }
     
     @IBOutlet weak var mapView : MKMapView!
     @IBOutlet weak var collectionView : UICollectionView!
     @IBOutlet weak var collectionViewFlowLayout : UICollectionViewFlowLayout!
     @IBOutlet weak var noImageLabel : UILabel!
     @IBOutlet weak var newCollectionButton : UIButton!
+    @IBOutlet weak var deleteBarItem : UIBarButtonItem!
     
     
     private let coordinateSpan = MKCoordinateSpan(latitudeDelta: 0.112872, longitudeDelta: 0.109863)
     private let collectionCellIdentifier = "FlickrImageCell"
+    private let imagePreviewSegue = "showImage"
     private let cellSpacing:CGFloat = 0.5
     private var contentCommandQueue = [ContentChangeCommand]()
+    private var currentState = State.Normal
     
     
     
@@ -60,7 +67,7 @@ class FlickrViewController: UIViewController {
         }
         
         collectionView.allowsSelection = true
-        collectionView.allowsMultipleSelection = true
+        collectionView.allowsMultipleSelection = false
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -79,20 +86,88 @@ class FlickrViewController: UIViewController {
         
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if collectionView.indexPathsForSelectedItems()?.count > 0 {
+            let index = collectionView.indexPathsForSelectedItems()?.first
+            let vc = segue.destinationViewController as! ImageViewController
+            vc.flickrPhoto = fetchedResultsController?.objectAtIndexPath(index!) as? FlickrPhoto
+        }
+    }
+    
     func resizeCollectionLayout() {
         let count:CGFloat = view.frame.width > view.frame.height ? 5.0 : 3.0
         let size:CGFloat = (view.frame.width - (count + 1) * cellSpacing) / count
         collectionViewFlowLayout.itemSize = CGSize(width: size, height: size)
     }
     
+    func isDeleteState() -> Bool {
+        return currentState == State.Delete
+    }
+    
     func configureUI() {
         noImageLabel.hidden = fetchedResultsController?.fetchedObjects!.count != 0
+        deleteBarItem.title = isDeleteState() ? "Cancel" : "Delete"
+        newCollectionButton!.setTitle( isDeleteState() ? "Delete" : "New Collection", forState: .Normal)
+    }
+    
+    func onStateChanged() {
+        
+        switch currentState{
+        case .Normal:
+            if (collectionView.indexPathsForSelectedItems()?.count > 0) {
+                let indexPaths = collectionView.indexPathsForSelectedItems()
+                for ip in indexPaths! {
+                    collectionView.deselectItemAtIndexPath(ip, animated: false)
+                }
+            }
+            collectionView.allowsMultipleSelection = false
+        case .Delete:
+            collectionView.allowsMultipleSelection = true
+            break
+        }
+    }
+    
+    func deleteSelectedImages() {
+        if (collectionView.indexPathsForSelectedItems()?.count > 0) {
+            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
+                var ids = [String]()
+                for index in self.collectionView.indexPathsForSelectedItems()! {
+                    if let cell = self.collectionView.cellForItemAtIndexPath(index) as? FlickrCollectionViewCell {
+                        ids.append((cell.flickrPhoto?.id)!)
+                    }
+                }
+                let fr = NSFetchRequest(entityName: "FlickrPhoto")
+                fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+                
+                let pred = NSPredicate(format: "id IN %@", argumentArray: [ids])
+                fr.predicate = pred
+                let fetchResults = try! workerContext.executeFetchRequest(fr)
+                for fetchResult in fetchResults {
+                    workerContext.deleteObject(fetchResult as! NSManagedObject)
+                }
+            })
+        }
     }
     
     @IBAction func onButtonPressed() {
-        mapCoordinate?.downloadPhotos({ (error) in })
+        
+        if isDeleteState() {
+            deleteSelectedImages()
+        } else {
+            mapCoordinate?.downloadPhotos({ (error) in })
+        }
     }
     
+    @IBAction func onDeletePressed() {
+        switch currentState{
+        case .Normal:
+            currentState = State.Delete
+        case .Delete:
+            currentState = State.Normal
+        }
+        onStateChanged()
+        configureUI()
+    }
 }
 
 // MARK:  - Collection View Delegates
@@ -113,6 +188,7 @@ extension FlickrViewController : UICollectionViewDelegate, UICollectionViewDataS
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(collectionCellIdentifier, forIndexPath: indexPath) as! FlickrCollectionViewCell
         
+        cell.backgroundColor = Constants.UI.CollectionViewBackgroundColor.normal
         cell.flickrPhoto = fp
         
         return cell
@@ -129,22 +205,18 @@ extension FlickrViewController : UICollectionViewDelegate, UICollectionViewDataS
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        if let cell = collectionView.cellForItemAtIndexPath(indexPath) as? FlickrCollectionViewCell {
-            
-            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
-                let fr = NSFetchRequest(entityName: "FlickrPhoto")
-                fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-                
-                let pred = NSPredicate(format: "id == %@", argumentArray: [cell.flickrPhoto!.id!])
-                fr.predicate = pred
-                
-                let fetchResults = try! workerContext.executeFetchRequest(fr)
-                workerContext.deleteObject(fetchResults[0] as! NSManagedObject)
-                
-            })
+        let cell = collectionView.cellForItemAtIndexPath(indexPath)
+        if isDeleteState() {
+            cell?.backgroundColor = Constants.UI.CollectionViewBackgroundColor.highlighted
+        } else {
+            performSegueWithIdentifier(imagePreviewSegue, sender: self)
         }
     }
     
+    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath)
+        cell?.backgroundColor = Constants.UI.CollectionViewBackgroundColor.normal
+    }
 }
 
 // MARK:  - Fetches

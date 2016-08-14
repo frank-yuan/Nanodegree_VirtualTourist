@@ -4,6 +4,7 @@
         <attribute name="downloading" transient="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" attributeType="String" syncable="YES"/>
         <relationship name="rMapCoord" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MapCoordinate" inverseName="rImage" inverseEntity="MapCoordinate" syncable="YES"/>
     </entity>
@@ -17,7 +18,7 @@
         <relationship name="rImage" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="FlickrPhoto" inverseName="rMapCoord" inverseEntity="FlickrPhoto" syncable="YES"/>
     </entity>
     <elements>
-        <element name="FlickrPhoto" positionX="-63" positionY="-18" width="128" height="120"/>
+        <element name="FlickrPhoto" positionX="-63" positionY="-18" width="128" height="135"/>
         <element name="MapCoordinate" positionX="178" positionY="72" width="128" height="150"/>
     </elements>
 </model>

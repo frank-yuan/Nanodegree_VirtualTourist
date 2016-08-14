@@ -13,12 +13,13 @@ import CoreData
 class FlickrPhoto: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
-    convenience init(id:String, url:String, mapCoordinate: MapCoordinate, context: NSManagedObjectContext)
+    convenience init(hashObject:AnyObject, mapCoordinate: MapCoordinate, context: NSManagedObjectContext)
     {
         if let ent = NSEntityDescription.entityForName(Constants.EntityName.FlickrPhoto, inManagedObjectContext: context) {
             self.init(entity: ent, insertIntoManagedObjectContext: context)
-            self.id = id
-            self.url = url
+            self.id = AnyObjectHelper.parseData(hashObject, name: Constants.FlickrResponseKeys.ID, defaultValue: "")
+            self.url = AnyObjectHelper.parseData(hashObject, name: Constants.FlickrResponseKeys.MediumURL, defaultValue: "")
+            self.title = AnyObjectHelper.parseData(hashObject, name: Constants.FlickrResponseKeys.Title, defaultValue: "")
             self.rMapCoord = mapCoordinate
         } else {
             fatalError("Unable to find Entity Name")
