@@ -75,6 +75,13 @@ struct Constants {
         static let FlickrPhoto = "FlickrPhoto"
     }
     
+    struct UI {
+        struct CollectionViewBackgroundColor{
+            static let normal = UIColor(red: 0.3922, green: 0.6471, blue: 0.7608, alpha: 1)
+            static let highlighted = UIColor.redColor()
+        }
+    }
+    
     // FIX: As of Swift 2.2, using strings for selectors has been deprecated. Instead, #selector(methodName) should be used.
     /*
     // MARK: Selectors

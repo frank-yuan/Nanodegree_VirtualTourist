@@ -30,11 +30,8 @@ class FlickrViewController: UIViewController {
     
     var fetchedResultsController : NSFetchedResultsController?{
         didSet{
-            // Whenever the frc changes, we execute the search and
-            // reload the table
             fetchedResultsController?.delegate = self
             executeSearch()
-            //collectionView.reloadData()
         }
     }
     override func viewDidLoad() {
@@ -91,7 +88,7 @@ class FlickrViewController: UIViewController {
                 let fr = NSFetchRequest(entityName: "FlickrPhoto")
                 fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
                 
-                let pred = NSPredicate(format: "id = %@", argumentArray: ids)
+                let pred = NSPredicate(format: "id IN %@", argumentArray: [ids])
                 fr.predicate = pred
                 let fetchResults = try! workerContext.executeFetchRequest(fr)
                 // TODO: Why only one result
@@ -144,15 +141,17 @@ extension FlickrViewController : UICollectionViewDelegate, UICollectionViewDataS
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        updateButtonText()
         let cell = collectionView.cellForItemAtIndexPath(indexPath)
-        cell?.backgroundColor = UIColor.greenColor()
+        cell?.backgroundColor = Constants.UI.CollectionViewBackgroundColor.highlighted
+        
+        updateButtonText()
     }
     
     func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
-        updateButtonText()
         let cell = collectionView.cellForItemAtIndexPath(indexPath)
-        cell?.backgroundColor = UIColor.blueColor()
+        cell?.backgroundColor = Constants.UI.CollectionViewBackgroundColor.normal
+        
+        updateButtonText()
     }
     
     func collectionView(collectionView: UICollectionView, shouldHighlightItemAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -242,5 +241,6 @@ extension FlickrViewController: NSFetchedResultsControllerDelegate{
             }, completion: nil)
         contentCommandQueue.removeAll()
         collectionView.reloadData()
+        updateButtonText()
     }
 }
