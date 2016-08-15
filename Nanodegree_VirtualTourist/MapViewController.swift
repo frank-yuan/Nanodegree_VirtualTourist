@@ -48,12 +48,10 @@ class MapViewController: UIViewController {
         // Create a fetchrequest
         let fr = NSFetchRequest(entityName: Constants.EntityName.MapCoordinate)
         fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-        //    NSSortDescriptor(key: "creationDate", ascending: false)]
         
         // Create the FetchedResultsController
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
                                             managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
-        // Do any additional setup after loading the view.
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -175,17 +173,18 @@ extension MapViewController : MKMapViewDelegate  {
         if currentState == .Delete {
             
             if let annotation = view.annotation as? CoreDataPointAnnotation,
-                workerContext = fetchedResultsController?.managedObjectContext,
-                coord = annotation.data as? MapCoordinate{
-                //CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
-                    workerContext.deleteObject(coord)
-                //})
+                coord = annotation.data as? MapCoordinate,
+                id = coord.id
+            {
+                CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
+                    if let mapCoord = MapCoordinate.getObjectInContext(workerContext, byId: id) {
+                        workerContext.deleteObject(mapCoord)
+                    }
+                })
                 removeAnnotation(coord)
             }
             
         } else {
-            // deselect so that we can select again when we back from next view
-            
             performSegueWithIdentifier("showFlickr", sender: self)
         }
     }

@@ -27,7 +27,7 @@ class MapCoordinate: NSManagedObject {
     }
     
     
-    static func getSameObjectInContext(workerContext:NSManagedObjectContext, byId:String) -> MapCoordinate? {
+    static func getObjectInContext(workerContext:NSManagedObjectContext, byId:String) -> MapCoordinate? {
         let fr = NSFetchRequest(entityName: Constants.EntityName.MapCoordinate)
         fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
         let pred = NSPredicate(format: "id = %@", argumentArray: [byId])
@@ -43,7 +43,7 @@ class MapCoordinate: NSManagedObject {
         let id = self.id!
         CoreDataHelper.performCoreDataBackgroundOperation(){ (workerContext) in
             
-            if let targetObject = MapCoordinate.getSameObjectInContext(workerContext, byId: id){
+            if let targetObject = MapCoordinate.getObjectInContext(workerContext, byId: id){
                 if ((targetObject.downloading) != false) {
                     completionHandler(error: "Already started")
                     return
