@@ -90,14 +90,6 @@ class MapViewController: UIViewController {
                 mapCoordinate.downloadPhotos(){ (error) in
                 }
             })
-            
-//            if let context = fetchedResultsController?.managedObjectContext{
-//                
-//                // Just create a new note and you're done!
-//                let mapCoordinate = MapCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude, context: context)
-//                MapCoordinate.backgroundDownloadForMapCoordinate(mapCoordinate, context: context) {   (result, error) in
-//                }
-//            }
         }
     }
     
@@ -229,9 +221,6 @@ extension MapViewController : NSFetchedResultsControllerDelegate {
                 
             case .Insert:
                 addAnnotation(coordinate)
-//                
-//            case .Delete:
-//                removeAnnotation(coordinate)
             default:
                 break
             }

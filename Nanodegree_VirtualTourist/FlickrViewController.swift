@@ -49,14 +49,18 @@ class FlickrViewController: UIViewController {
         // Create the FetchedResultsController
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
                                                                    managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
+        
+        configureUI()
+        
         if (fetchedResultsController?.fetchedObjects?.count > 0) {
             self.collectionView.reloadData()
-            configureUI()
-        } else if mapCoordinate?.downloading == false {
-            mapCoordinate?.downloadPhotos({ (error) in
-                self.collectionView.reloadData()
-                self.configureUI()
-            })
+        } else {
+            newCollectionButton.enabled = false
+            
+            if mapCoordinate?.downloading == false {
+                mapCoordinate?.downloadPhotos({ (error) in
+                })
+            }
         }
         
         collectionView.allowsSelection = true
@@ -87,9 +91,20 @@ class FlickrViewController: UIViewController {
     
     func configureUI() {
         noImageLabel.hidden = fetchedResultsController?.fetchedObjects!.count != 0
+        newCollectionButton.enabled = !anyImageDownloading()
+    }
+    
+    func anyImageDownloading() -> Bool {
+        for item in (fetchedResultsController?.fetchedObjects)! {
+            if ((item as! FlickrPhoto).downloading == true) {
+                return true
+            }
+        }
+        return false
     }
     
     @IBAction func onButtonPressed() {
+        newCollectionButton.enabled = false
         mapCoordinate?.downloadPhotos({ (error) in })
     }
     

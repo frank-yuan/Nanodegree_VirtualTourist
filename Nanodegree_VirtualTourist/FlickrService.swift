@@ -26,7 +26,7 @@ class FlickrService: NSObject {
             Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
             Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
             Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback,
-            Constants.FlickrParameterKeys.PerPage: Constants.FlickrParameterValues.RecordPerPage,
+            Constants.FlickrParameterKeys.PerPage: "\(Constants.FlickrParameterValues.RecordPerPage)",
             Constants.FlickrParameterKeys.Page: "\(page)"
         ]
         
