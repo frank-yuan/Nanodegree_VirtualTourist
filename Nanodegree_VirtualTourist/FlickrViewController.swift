@@ -56,13 +56,20 @@ class FlickrViewController: UIViewController {
         // Create the FetchedResultsController
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
                                                                    managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
+        
+        configureUI()
+        
         if (fetchedResultsController?.fetchedObjects?.count > 0) {
             self.collectionView.reloadData()
-            configureUI()
-        } else if mapCoordinate?.downloading == false {
-            mapCoordinate?.downloadPhotos({ (error) in
-                self.collectionView.reloadData()
-                self.configureUI()
+        } else {
+            newCollectionButton.enabled = false
+            // find same object in background context
+            let id = mapCoordinate?.id
+            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
+                let mc = MapCoordinate.getObjectInContext(workerContext, byId: id!)
+                if mc?.downloading == false {
+                    mc?.downloadPhotosInPrivateQueue({ (error) in })
+                }
             })
         }
         
@@ -108,6 +115,7 @@ class FlickrViewController: UIViewController {
         noImageLabel.hidden = fetchedResultsController?.fetchedObjects!.count != 0
         deleteBarItem.title = isDeleteState() ? "Cancel" : "Delete"
         newCollectionButton!.setTitle( isDeleteState() ? "Delete" : "New Collection", forState: .Normal)
+        newCollectionButton.enabled = isDeleteState() ? true : !anyImageDownloading()
     }
     
     func onStateChanged() {
@@ -129,13 +137,14 @@ class FlickrViewController: UIViewController {
     
     func deleteSelectedImages() {
         if (collectionView.indexPathsForSelectedItems()?.count > 0) {
-            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
-                var ids = [String]()
-                for index in self.collectionView.indexPathsForSelectedItems()! {
-                    if let cell = self.collectionView.cellForItemAtIndexPath(index) as? FlickrCollectionViewCell {
-                        ids.append((cell.flickrPhoto?.id)!)
-                    }
+            var ids = [String]()
+            for index in self.collectionView.indexPathsForSelectedItems()! {
+                if let cell = self.collectionView.cellForItemAtIndexPath(index) as? FlickrCollectionViewCell {
+                    ids.append((cell.flickrPhoto?.id)!)
                 }
+            }
+            
+            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
                 let fr = NSFetchRequest(entityName: "FlickrPhoto")
                 fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
                 
@@ -145,16 +154,32 @@ class FlickrViewController: UIViewController {
                 for fetchResult in fetchResults {
                     workerContext.deleteObject(fetchResult as! NSManagedObject)
                 }
+                CoreDataHelper.saveStack()
             })
         }
     }
     
+    
+    func anyImageDownloading() -> Bool {
+        for item in (fetchedResultsController?.fetchedObjects)! {
+            if ((item as! FlickrPhoto).image == nil) {
+                return true
+            }
+        }
+        return false
+    }
+    
     @IBAction func onButtonPressed() {
-        
         if isDeleteState() {
             deleteSelectedImages()
         } else {
-            mapCoordinate?.downloadPhotos({ (error) in })
+            newCollectionButton.enabled = false
+            let id = mapCoordinate?.id
+            CoreDataHelper.performCoreDataBackgroundOperation { (workerContext) in
+                let mc = MapCoordinate.getObjectInContext(workerContext, byId: id!)
+                mc?.clearImages()
+                mc?.downloadPhotosInPrivateQueue({ (error) in })
+            }
         }
     }
     

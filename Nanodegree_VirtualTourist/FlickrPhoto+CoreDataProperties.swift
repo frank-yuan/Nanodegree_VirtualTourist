@@ -14,7 +14,6 @@ import CoreData
 
 extension FlickrPhoto {
 
-    @NSManaged var downloading: NSNumber?
     @NSManaged var id: String?
     @NSManaged var image: NSData?
     @NSManaged var url: String?

@@ -11,12 +11,13 @@ import UIKit
 class FlickrCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var imageView : UIImageView!
+    @IBOutlet weak var activityIndicatorView : UIActivityIndicatorView!
     
     var flickrPhoto : FlickrPhoto? {
         didSet{
             if let fp = flickrPhoto {
                 setImage(fp.image)
-                if (fp.image == nil && fp.downloading == false) {
+                if (fp.image == nil) {
                     fp.startDownload()
                 }
             }
@@ -35,8 +36,8 @@ class FlickrCollectionViewCell: UICollectionViewCell {
     }
     
     func onChanged() {
-        if let loadingView = viewWithTag(200) {
-            loadingView.hidden = imageView.image != nil
+        if imageView.image != nil {
+            activityIndicatorView.stopAnimating()
         }
     }
 }
