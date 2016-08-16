@@ -80,7 +80,7 @@ class MapCoordinate: NSManagedObject {
     
     func downloadPhotosInPrivateQueue(completionHandler:(error: String?) -> Void) {
         self.downloading = true
-        var page = Int(self.totalPage!)
+        var page = min(Int(self.totalPage!), Constants.Flickr.MaxDisplayableImageCount / Constants.FlickrParameterValues.RecordPerPage)
         page = page == 0 ? 1 :  (Int(arc4random()) % page)
         FlickrService.retrieveImagesByGeo(self.toLocationCoordinate2D(), page: page) { (result, error) in
             CoreDataHelper.performCoreDataBackgroundOperation(){ (workerContext) in
