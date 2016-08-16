@@ -41,9 +41,7 @@ class MapCoordinate: NSManagedObject {
             // create new photos
             for photoData in photo {
                 
-                let flickrPhoto = FlickrPhoto(
-                    id: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.ID, defaultValue: ""),
-                    url: AnyObjectHelper.parseData(photoData, name: Constants.FlickrResponseKeys.MediumURL, defaultValue: ""),
+                let flickrPhoto = FlickrPhoto(hashObject: photoData,
                     mapCoordinate: self,
                     context: self.managedObjectContext!)
                 flickrPhoto.startDownload()
