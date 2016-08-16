@@ -16,7 +16,7 @@ class FlickrCollectionViewCell: UICollectionViewCell {
         didSet{
             if let fp = flickrPhoto {
                 setImage(fp.image)
-                if (fp.image == nil && fp.downloading == false) {
+                if (fp.image == nil) {
                     fp.startDownload()
                 }
             }

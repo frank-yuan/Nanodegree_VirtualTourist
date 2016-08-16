@@ -56,11 +56,14 @@ class FlickrViewController: UIViewController {
             self.collectionView.reloadData()
         } else {
             newCollectionButton.enabled = false
-            
-            if mapCoordinate?.downloading == false {
-                mapCoordinate?.downloadPhotos({ (error) in
-                })
-            }
+            // find same object in background context
+            let id = mapCoordinate?.id
+            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
+                let mc = MapCoordinate.getObjectInContext(workerContext, byId: id!)
+                if mc?.downloading == false {
+                    mc?.downloadPhotosInPrivateQueue({ (error) in })
+                }
+            })
         }
         
         collectionView.allowsSelection = true
@@ -96,7 +99,7 @@ class FlickrViewController: UIViewController {
     
     func anyImageDownloading() -> Bool {
         for item in (fetchedResultsController?.fetchedObjects)! {
-            if ((item as! FlickrPhoto).downloading == true) {
+            if ((item as! FlickrPhoto).image == nil) {
                 return true
             }
         }
@@ -105,7 +108,12 @@ class FlickrViewController: UIViewController {
     
     @IBAction func onButtonPressed() {
         newCollectionButton.enabled = false
-        mapCoordinate?.downloadPhotos({ (error) in })
+        let id = mapCoordinate?.id
+        CoreDataHelper.performCoreDataBackgroundOperation { (workerContext) in
+            let mc = MapCoordinate.getObjectInContext(workerContext, byId: id!)
+            mc?.clearImages()
+            mc?.downloadPhotosInPrivateQueue({ (error) in })
+        }
     }
     
 }

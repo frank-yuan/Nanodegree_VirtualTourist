@@ -17,7 +17,6 @@ extension FlickrPhoto {
     @NSManaged var id: String?
     @NSManaged var image: NSData?
     @NSManaged var url: String?
-    @NSManaged var downloading: NSNumber?
     @NSManaged var rMapCoord: MapCoordinate?
 
 }

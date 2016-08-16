@@ -27,10 +27,10 @@ class FlickrPhoto: NSManagedObject {
     }
     
     func startDownload() {
-        performUpdatesUserInitiated{
-            self.downloading = true
-            let image = NSData(contentsOfURL: NSURL(string: self.url!)!)
-            let entityId = self.id!
+        let entityId = self.id!
+        let url = self.url!
+        performUpdatesUserInteractive {
+            let image = NSData(contentsOfURL: NSURL(string: url)!)
             CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
                 
                 // build fetch request to find self in background context
@@ -44,7 +44,6 @@ class FlickrPhoto: NSManagedObject {
                 if let targetObject = fetchResults.first as? FlickrPhoto {
                     targetObject.image = image
                 }
-                self.downloading = false
             })
             
         }

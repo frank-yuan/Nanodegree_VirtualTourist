@@ -83,11 +83,7 @@ class MapViewController: UIViewController {
         {
             let touchPoint = gestureRecognizer.locationInView(mapView)
             let coordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
-            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
-                let mapCoordinate = MapCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude, context: workerContext)
-                mapCoordinate.downloadPhotos(){ (error) in
-                }
-            })
+            MapCoordinate.instantiateMapCoordinate(latitude: coordinate.latitude, longitude: coordinate.longitude)
         }
     }
     

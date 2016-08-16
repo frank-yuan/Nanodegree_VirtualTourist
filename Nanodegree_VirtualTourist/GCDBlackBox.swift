@@ -18,8 +18,8 @@ func performUpdatesUserInitiated(updates: () -> Void) {
         updates()
     }
 }
-func performUpdatesBackground(updates: () -> Void) {
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
+func performUpdatesUserInteractive(updates: () -> Void) {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0)) {
         updates()
     }
 }
