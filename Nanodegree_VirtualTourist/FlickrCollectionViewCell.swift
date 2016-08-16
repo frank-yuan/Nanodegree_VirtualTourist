@@ -11,6 +11,7 @@ import UIKit
 class FlickrCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var imageView : UIImageView!
+    @IBOutlet weak var activityIndicatorView : UIActivityIndicatorView!
     
     var flickrPhoto : FlickrPhoto? {
         didSet{
@@ -35,8 +36,8 @@ class FlickrCollectionViewCell: UICollectionViewCell {
     }
     
     func onChanged() {
-        if let loadingView = viewWithTag(200) {
-            loadingView.hidden = imageView.image != nil
+        if imageView.image != nil {
+            activityIndicatorView.stopAnimating()
         }
     }
 }

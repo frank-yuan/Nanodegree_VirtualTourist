@@ -175,6 +175,7 @@ extension MapViewController : MKMapViewDelegate  {
                 CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
                     if let mapCoord = MapCoordinate.getObjectInContext(workerContext, byId: id) {
                         workerContext.deleteObject(mapCoord)
+                        CoreDataHelper.saveStack()
                     }
                 })
                 removeAnnotation(coord)

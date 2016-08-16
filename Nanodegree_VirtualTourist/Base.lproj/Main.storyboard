@@ -42,7 +42,7 @@
                                                 <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NC1-Ae-pj8">
                                                     <rect key="frame" x="0.0" y="0.0" width="165" height="165"/>
                                                 </imageView>
-                                                <activityIndicatorView opaque="NO" tag="200" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="wHX-cs-UU1">
+                                                <activityIndicatorView opaque="NO" tag="200" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="wHX-cs-UU1">
                                                     <rect key="frame" x="72" y="73" width="20" height="20"/>
                                                 </activityIndicatorView>
                                             </subviews>
@@ -58,6 +58,7 @@
                                             <constraint firstItem="NC1-Ae-pj8" firstAttribute="centerY" secondItem="nZ1-ta-4Ye" secondAttribute="centerY" id="gwg-l3-cEB"/>
                                         </constraints>
                                         <connections>
+                                            <outlet property="activityIndicatorView" destination="wHX-cs-UU1" id="2Xt-ZI-CeV"/>
                                             <outlet property="imageView" destination="NC1-Ae-pj8" id="3dh-zn-Qev"/>
                                         </connections>
                                     </collectionViewCell>

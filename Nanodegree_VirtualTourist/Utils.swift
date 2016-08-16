@@ -64,4 +64,10 @@ class CoreDataHelper : NSObject {
             appDelegate.stack.performBackgroundBatchOperation(handler)
         }
     }
+    
+    static func saveStack() {
+        if let appDelegate = UIApplication.sharedApplication().delegate as? AppDelegate {
+            appDelegate.stack.save()
+        }
+    }
 }

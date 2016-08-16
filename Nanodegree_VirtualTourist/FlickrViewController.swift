@@ -154,15 +154,18 @@ extension FlickrViewController : UICollectionViewDelegate, UICollectionViewDataS
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         if let cell = collectionView.cellForItemAtIndexPath(indexPath) as? FlickrCollectionViewCell {
             
+            let id = cell.flickrPhoto!.id!
+            
             CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
                 let fr = NSFetchRequest(entityName: "FlickrPhoto")
                 fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
                 
-                let pred = NSPredicate(format: "id == %@", argumentArray: [cell.flickrPhoto!.id!])
+                let pred = NSPredicate(format: "id == %@", argumentArray: [id])
                 fr.predicate = pred
                 
                 let fetchResults = try! workerContext.executeFetchRequest(fr)
                 workerContext.deleteObject(fetchResults[0] as! NSManagedObject)
+                CoreDataHelper.saveStack()
                 
             })
         }
