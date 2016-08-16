@@ -11,6 +11,7 @@ import UIKit
 class ImageViewController: UIViewController {
 
     var flickrPhoto : FlickrPhoto?
+    var pageIndex : Int!
     @IBOutlet weak var imageView : UIImageView!
     @IBOutlet weak var titleLabel : UILabel!
     

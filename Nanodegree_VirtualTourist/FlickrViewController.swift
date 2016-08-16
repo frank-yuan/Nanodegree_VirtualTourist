@@ -96,8 +96,9 @@ class FlickrViewController: UIViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if collectionView.indexPathsForSelectedItems()?.count > 0 {
             let index = collectionView.indexPathsForSelectedItems()?.first
-            let vc = segue.destinationViewController as! ImageViewController
-            vc.flickrPhoto = fetchedResultsController?.objectAtIndexPath(index!) as? FlickrPhoto
+            let vc = segue.destinationViewController as! PageViewController
+            vc.currentIndex = index?.row
+            vc.fetchedResultsController = fetchedResultsController
         }
     }
     

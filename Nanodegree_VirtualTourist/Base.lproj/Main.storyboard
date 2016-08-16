@@ -118,17 +118,25 @@
                         <outlet property="mapView" destination="6dO-wv-Pgx" id="0uy-K7-QDB"/>
                         <outlet property="newCollectionButton" destination="W6x-lz-xi2" id="55A-06-5Wv"/>
                         <outlet property="noImageLabel" destination="MPQ-ia-dNK" id="PSC-ki-8XU"/>
-                        <segue destination="nRx-nF-nwc" kind="show" identifier="showImage" id="TQJ-fV-4Xm"/>
+                        <segue destination="XoF-Ep-S0g" kind="show" identifier="showImage" id="Y0e-tA-vnC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Flt-3i-vAX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-313" y="1794"/>
         </scene>
+        <!--Page View Controller-->
+        <scene sceneID="cnU-9N-fP7">
+            <objects>
+                <pageViewController autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="XoF-Ep-S0g" customClass="PageViewController" customModule="Nanodegree_VirtualTourist" customModuleProvider="target" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Zmk-I4-b6z" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="451" y="1794"/>
+        </scene>
         <!--Image View Controller-->
         <scene sceneID="32n-cc-EWK">
             <objects>
-                <viewController id="nRx-nF-nwc" customClass="ImageViewController" customModule="Nanodegree_VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ImageViewController" id="nRx-nF-nwc" customClass="ImageViewController" customModule="Nanodegree_VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="5Ok-1c-6sN"/>
                         <viewControllerLayoutGuide type="bottom" id="O0w-FU-IxX"/>
@@ -169,7 +177,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dtH-Wx-WR9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="348" y="1801"/>
+            <point key="canvasLocation" x="1320" y="1794"/>
         </scene>
         <!--Map View Controller-->
         <scene sceneID="tne-QT-ifu">
