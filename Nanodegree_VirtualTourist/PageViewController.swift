@@ -28,6 +28,7 @@ class PageViewController: UIPageViewController {
                                animated: false,
                                completion: nil)
         }
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Action, target: self, action: #selector(shareImage))
     }
     
     func instantiateViewController(index: Int) -> ImageViewController? {
@@ -37,6 +38,12 @@ class PageViewController: UIPageViewController {
         return vc
     }
 
+    func shareImage() {
+        if let imagevc = viewControllers?.first as? ImageViewController {
+            let vc = UIActivityViewController(activityItems: [imagevc.imageView.image!], applicationActivities: nil)
+            presentViewController(vc, animated: true, completion: nil)
+        }
+    }
 
 }
 extension PageViewController {

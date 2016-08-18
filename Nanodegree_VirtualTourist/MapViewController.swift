@@ -169,15 +169,10 @@ extension MapViewController : MKMapViewDelegate  {
         if currentState == .Delete {
             
             if let annotation = view.annotation as? CoreDataPointAnnotation,
-                coord = annotation.data as? MapCoordinate,
-                id = coord.id
+                coord = annotation.data as? MapCoordinate
             {
-                CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
-                    if let mapCoord = MapCoordinate.getObjectInContext(workerContext, byId: id) {
-                        workerContext.deleteObject(mapCoord)
-                        CoreDataHelper.saveStack()
-                    }
-                })
+                fetchedResultsController?.managedObjectContext.deleteObject(coord)
+                CoreDataHelper.saveStack()
                 removeAnnotation(coord)
             }
             

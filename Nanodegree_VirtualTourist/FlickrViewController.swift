@@ -116,7 +116,12 @@ class FlickrViewController: UIViewController {
         noImageLabel.hidden = fetchedResultsController?.fetchedObjects!.count != 0
         deleteBarItem.title = isDeleteState() ? "Cancel" : "Delete"
         newCollectionButton!.setTitle( isDeleteState() ? "Delete" : "New Collection", forState: .Normal)
-        newCollectionButton.enabled = isDeleteState() ? true : !anyImageDownloading()
+        newCollectionButton.enabled = false
+        if isDeleteState() {
+            newCollectionButton.enabled = true
+        } else if !anyImageDownloading() && fetchedResultsController?.fetchedObjects?.count > 0 {
+            newCollectionButton.enabled = true
+        }
     }
     
     func onStateChanged() {
@@ -145,18 +150,17 @@ class FlickrViewController: UIViewController {
                 }
             }
             
-            CoreDataHelper.performCoreDataBackgroundOperation({ (workerContext) in
-                let fr = NSFetchRequest(entityName: "FlickrPhoto")
-                fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-                
-                let pred = NSPredicate(format: "id IN %@", argumentArray: [ids])
-                fr.predicate = pred
-                let fetchResults = try! workerContext.executeFetchRequest(fr)
-                for fetchResult in fetchResults {
-                    workerContext.deleteObject(fetchResult as! NSManagedObject)
-                }
-                CoreDataHelper.saveStack()
-            })
+            let workerContext = fetchedResultsController?.managedObjectContext
+            let fr = NSFetchRequest(entityName: "FlickrPhoto")
+            fr.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+            
+            let pred = NSPredicate(format: "id IN %@", argumentArray: [ids])
+            fr.predicate = pred
+            let fetchResults = try! workerContext!.executeFetchRequest(fr)
+            for fetchResult in fetchResults {
+                workerContext!.deleteObject(fetchResult as! NSManagedObject)
+            }
+            CoreDataHelper.saveStack()
         }
     }
     
@@ -175,10 +179,10 @@ class FlickrViewController: UIViewController {
             deleteSelectedImages()
         } else {
             newCollectionButton.enabled = false
+            mapCoordinate!.clearImages()
             let id = mapCoordinate?.id
             CoreDataHelper.performCoreDataBackgroundOperation { (workerContext) in
                 let mc = MapCoordinate.getObjectInContext(workerContext, byId: id!)
-                mc?.clearImages()
                 mc?.downloadPhotosInPrivateQueue({ (error) in })
             }
         }
